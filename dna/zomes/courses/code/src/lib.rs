@@ -134,7 +134,7 @@ mod course_zome {
   /**************************** Content Zome Functions */
   #[entry_def]
   fn content_entry_definition() -> ValidatingEntryType {
-    content::module_entry_def()
+    content::entry::module_entry_def()
   }
 
   #[zome_fn("hc_public")]
@@ -145,16 +145,16 @@ mod course_zome {
     timestamp: u64,
     description: String,
   ) -> ZomeApiResult<Address> {
-    content::create(name, module_address, url, timestamp, description)
+    content::handlers::create(name, module_address, url, timestamp, description)
   }
 
   #[zome_fn("hc_public")]
   fn get_contents(module_address: Address) -> ZomeApiResult<Vec<Address>> {
-    content::get_contents(&module_address)
+    content::handlers::get_contents(&module_address)
   }
   #[zome_fn("hc_public")]
   fn delete_content(content_address: Address) -> ZomeApiResult<Address> {
-    content::delete(content_address)
+    content::handlers::delete(content_address)
   }
 
   #[zome_fn("hc_public")]
@@ -164,6 +164,6 @@ mod course_zome {
     url: String,
     description: String,
   ) -> ZomeApiResult<Address> {
-    content::update(content_address, name, url, description)
+    content::handlers::update(content_address, name, url, description)
   }
 }
