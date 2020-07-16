@@ -27,7 +27,7 @@ use hdk_proc_macros::zome;
 /******************************** */
 mod content;
 mod course;
-mod module;
+mod section;
 use course::entry::Course;
 #[zome]
 mod course_zome {
@@ -109,7 +109,7 @@ mod course_zome {
   /**************************** Module Entry Definition & Functions */
   #[entry_def]
   fn module_entry_definition() -> ValidatingEntryType {
-    module::entry_def()
+    section::entry::entry_def()
   }
 
   #[zome_fn("hc_public")]
@@ -118,17 +118,17 @@ mod course_zome {
     course_address: Address,
     timestamp: u64,
   ) -> ZomeApiResult<Address> {
-    module::create(title, &course_address, timestamp)
+    section::handlers::create(title, &course_address, timestamp)
   }
 
   #[zome_fn("hc_public")]
   fn update_module(title: String, module_address: Address) -> ZomeApiResult<Address> {
-    module::update(title, &module_address)
+    section::handlers::update(title, &module_address)
   }
 
   #[zome_fn("hc_public")]
   fn delete_module(module_address: Address) -> ZomeApiResult<Address> {
-    module::delete(module_address)
+    section::handlers::delete(module_address)
   }
 
   /**************************** Content Zome Functions */
