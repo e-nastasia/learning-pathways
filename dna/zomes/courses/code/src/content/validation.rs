@@ -1,21 +1,7 @@
-use crate::course;
 use crate::course::entry::Course;
 use crate::section::entry::Module;
-use hdk::holochain_core_types::dna::entry_types::Sharing;
-use hdk::holochain_core_types::{entry::Entry, validation::EntryValidationData};
-use hdk::holochain_json_api::{error::JsonError, json::JsonString};
 use hdk::holochain_persistence_api::cas::content::Address;
-use hdk::prelude::LinkMatch;
-use hdk::{
-    entry_definition::ValidatingEntryType,
-    error::{ZomeApiError, ZomeApiResult},
-    AGENT_ADDRESS,
-};
-use holochain_wasm_utils::api_serialization::{
-    get_entry::{GetEntryOptions, GetEntryResult},
-    get_links::GetLinksOptions,
-};
-use std::convert::TryFrom;
+use hdk::error::{ZomeApiError, ZomeApiResult};
 
 /////////////////////////// Validations
 pub fn validate_author(

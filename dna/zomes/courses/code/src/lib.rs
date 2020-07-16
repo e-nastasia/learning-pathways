@@ -1,7 +1,6 @@
 /***************** Required Library */
 #![feature(vec_remove_item)]
 #![allow(dead_code)]
-#![allow(unused_imports)]
 #![feature(proc_macro_hygiene)]
 #[macro_use]
 extern crate hdk;
@@ -15,9 +14,7 @@ extern crate holochain_json_derive;
 
 use hdk::prelude::*;
 
-//use hdk::holochain_json_api::json::JsonString;
 
-use hdk::holochain_json_api::{error::JsonError, json::JsonString};
 use hdk::holochain_persistence_api::cas::content::Address;
 use hdk::AGENT_ADDRESS;
 use hdk_proc_macros::zome;
@@ -28,7 +25,7 @@ use hdk_proc_macros::zome;
 mod content;
 mod course;
 mod section;
-use course::entry::Course;
+
 #[zome]
 mod course_zome {
 

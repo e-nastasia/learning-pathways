@@ -2,7 +2,6 @@ use hdk::prelude::*;
 
 use crate::course::entry::Course;
 use super::entry::Module;
-use std::convert::TryFrom;
 
 pub fn validate_module_title(title: &str) -> Result<(), String> {
     if title.len() > 200 {

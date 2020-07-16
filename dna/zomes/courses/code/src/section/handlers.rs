@@ -2,7 +2,6 @@ use hdk::prelude::*;
 
 use crate::course::entry::Course;
 use super::entry::Module;
-use std::convert::TryFrom;
 
 
 pub fn create(title: String, course_address: &Address, timestamp: u64) -> ZomeApiResult<Address> {

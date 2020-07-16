@@ -1,25 +1,9 @@
-use crate::course;
-use crate::course::entry::Course;
-use crate::section::entry::Module;
-use hdk::holochain_core_types::dna::entry_types::Sharing;
-use hdk::holochain_core_types::{entry::Entry, validation::EntryValidationData};
-use hdk::holochain_json_api::{error::JsonError, json::JsonString};
-use hdk::holochain_persistence_api::cas::content::Address;
-use hdk::prelude::LinkMatch;
-use hdk::{
-    entry_definition::ValidatingEntryType,
-    error::{ZomeApiError, ZomeApiResult},
-    AGENT_ADDRESS,
-};
-use holochain_wasm_utils::api_serialization::{
-    get_entry::{GetEntryOptions, GetEntryResult},
-    get_links::GetLinksOptions,
-};
-use std::convert::TryFrom;
+use hdk::prelude::*;
 
 use super::validation::validate_author;
 
-#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
+// NOTE: using self::DefaultJson to disambiguate usage of DefaultJson from this module (hdk::prelude imports it)
+#[derive(Serialize, Deserialize, Debug, self::DefaultJson, Clone)]
 pub struct Content {
     pub name: String,
     pub url: String,

@@ -1,10 +1,19 @@
-use hdk::prelude::*;
+use hdk::{
+    entry_definition::ValidatingEntryType,
+    holochain_core_types::{
+        dna::entry_types::Sharing,
+        entry::Entry,
+        validation::EntryValidationData,
+    },
+    holochain_json_api::{
+        error::JsonError, 
+        json::JsonString
+    },
+    holochain_persistence_api::cas::content::Address
+};
 
-use crate::course::entry::Course;
 use super::validation::{validate_author, validate_module_title};
-use std::convert::TryFrom;
-
-#[derive(Serialize, Deserialize, Debug, self::DefaultJson, Clone)]
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Module {
     pub title: String,
     pub timestamp: u64,
