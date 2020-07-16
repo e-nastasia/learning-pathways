@@ -1,7 +1,7 @@
 /************************ Import Required Libraries */
 use hdk::prelude::*;
 
-use crate::course::Course;
+use crate::course::entry::Course;
 use std::convert::TryFrom;
 /******************************************* */
 

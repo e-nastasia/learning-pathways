@@ -28,7 +28,7 @@ use hdk_proc_macros::zome;
 mod content;
 mod course;
 mod module;
-use course::Course;
+use course::entry::Course;
 #[zome]
 mod course_zome {
 
@@ -50,17 +50,17 @@ mod course_zome {
   /**************************** Course Entry Definition and Functions */
   #[entry_def]
   fn anchor_entry_definition() -> ValidatingEntryType {
-    course::anchor_entry_def()
+    course::anchor::anchor_entry_def()
   }
 
   #[entry_def]
   fn course_entry_definition() -> ValidatingEntryType {
-    course::course_entry_def()
+    course::entry::course_entry_def()
   }
 
   #[zome_fn("hc_public")]
   fn create_course(title: String, timestamp: u64) -> ZomeApiResult<Address> {
-    course::create(title, timestamp)
+    course::handlers::create(title, timestamp)
   }
 
   #[zome_fn("hc_public")]
@@ -74,36 +74,36 @@ mod course_zome {
     modules_addresses: Vec<Address>,
     course_address: Address,
   ) -> ZomeApiResult<Address> {
-    course::update(title, modules_addresses, &course_address)
+    course::handlers::update(title, modules_addresses, &course_address)
   }
 
   #[zome_fn("hc_public")]
   fn delete_course(course_address: Address) -> ZomeApiResult<Address> {
-    course::delete(course_address)
+    course::handlers::delete(course_address)
   }
 
   #[zome_fn("hc_public")]
   fn get_all_courses() -> ZomeApiResult<Vec<Address>> {
-    course::list()
+    course::handlers::list()
   }
   #[zome_fn("hc_public")]
   fn get_my_courses() -> ZomeApiResult<Vec<Address>> {
-    course::get_my_courses()
+    course::handlers::get_my_courses()
   }
 
   #[zome_fn("hc_public")]
   fn get_my_enrolled_courses() -> ZomeApiResult<Vec<Address>> {
-    course::get_my_enrolled_courses()
+    course::handlers::get_my_enrolled_courses()
   }
 
   #[zome_fn("hc_public")]
   fn enrol_in_course(course_address: Address) -> ZomeApiResult<Address> {
-    course::enrol_in_course(course_address)
+    course::handlers::enrol_in_course(course_address)
   }
 
   #[zome_fn("hc_public")]
   fn get_all_students(course_address: Address) -> ZomeApiResult<Vec<Address>> {
-    course::get_students(course_address)
+    course::handlers::get_students(course_address)
   }
 
   /**************************** Module Entry Definition & Functions */
