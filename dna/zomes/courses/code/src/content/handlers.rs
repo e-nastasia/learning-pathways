@@ -6,28 +6,28 @@ use super::entry::Content;
 
 pub fn create(
     name: String,
-    module_address: Address,
+    section_address: Address,
     url: String,
     timestamp: u64,
     description: String,
 ) -> ZomeApiResult<Address> {
-    let new_content = Content::new(name, module_address.clone(), url, timestamp, description);
+    let new_content = Content::new(name, section_address.clone(), url, timestamp, description);
     let new_content_entry = new_content.entry();
     let new_content_address = hdk::commit_entry(&new_content_entry)?;
     hdk::link_entries(
-        &module_address,
+        &section_address,
         &new_content_address,
-        "module->contents",
+        "section->contents",
         "",
     )?;
 
     Ok(new_content_address)
 }
 
-pub fn get_contents(module_address: &Address) -> ZomeApiResult<Vec<Address>> {
+pub fn get_contents(section_address: &Address) -> ZomeApiResult<Vec<Address>> {
     let links = hdk::get_links(
-        &module_address,
-        LinkMatch::Exactly("module->contents"),
+        &section_address,
+        LinkMatch::Exactly("section->contents"),
         LinkMatch::Any,
     )?;
 
@@ -37,9 +37,9 @@ pub fn delete(content_address: Address) -> ZomeApiResult<Address> {
     let content: Content = hdk::utils::get_as_type(content_address.clone())?;
 
     hdk::remove_link(
-        &content.module_address,
+        &content.section_address,
         &content_address,
-        "module->contents",
+        "section->contents",
         "",
     )?;
 

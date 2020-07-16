@@ -1,22 +1,22 @@
 use hdk::prelude::*;
 
-use super::entry::Module;
+use super::entry::Section;
 use crate::course::entry::Course;
 
-pub fn validate_module_title(title: &str) -> Result<(), String> {
+pub fn validate_section_title(title: &str) -> Result<(), String> {
     if title.len() > 200 {
-        Err("Module title is too long".into())
+        Err("Section title is too long".into())
     } else {
         Ok(())
     }
 }
 
-pub fn validate_author(signing_addresses: &Vec<Address>, module: &Module) -> ZomeApiResult<()> {
-    let course: Course = hdk::utils::get_as_type(module.course_address.clone())?;
+pub fn validate_author(signing_addresses: &Vec<Address>, section: &Section) -> ZomeApiResult<()> {
+    let course: Course = hdk::utils::get_as_type(section.course_address.clone())?;
     hdk::debug(format!("{:?}", course))?;
     if !signing_addresses.contains(&course.teacher_address) {
         return Err(ZomeApiError::from(String::from(
-            "Only the teacher can create or modify a module for it",
+            "Only the teacher can create or modify a section for it",
         )));
     }
     Ok(())

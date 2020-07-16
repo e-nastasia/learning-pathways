@@ -67,10 +67,10 @@ mod course_zome {
     #[zome_fn("hc_public")]
     fn update_course(
         title: String,
-        modules_addresses: Vec<Address>,
+        sections_addresses: Vec<Address>,
         course_address: Address,
     ) -> ZomeApiResult<Address> {
-        course::handlers::update(title, modules_addresses, &course_address)
+        course::handlers::update(title, sections_addresses, &course_address)
     }
 
     #[zome_fn("hc_public")]
@@ -102,14 +102,14 @@ mod course_zome {
         course::handlers::get_students(course_address)
     }
 
-    /**************************** Module Entry Definition & Functions */
+    /**************************** Section Entry Definition & Functions */
     #[entry_def]
-    fn module_entry_definition() -> ValidatingEntryType {
+    fn section_entry_definition() -> ValidatingEntryType {
         section::entry::entry_def()
     }
 
     #[zome_fn("hc_public")]
-    fn create_module(
+    fn create_section(
         title: String,
         course_address: Address,
         timestamp: u64,
@@ -118,35 +118,35 @@ mod course_zome {
     }
 
     #[zome_fn("hc_public")]
-    fn update_module(title: String, module_address: Address) -> ZomeApiResult<Address> {
-        section::handlers::update(title, &module_address)
+    fn update_section(title: String, section_address: Address) -> ZomeApiResult<Address> {
+        section::handlers::update(title, &section_address)
     }
 
     #[zome_fn("hc_public")]
-    fn delete_module(module_address: Address) -> ZomeApiResult<Address> {
-        section::handlers::delete(module_address)
+    fn delete_section(section_address: Address) -> ZomeApiResult<Address> {
+        section::handlers::delete(section_address)
     }
 
     /**************************** Content Zome Functions */
     #[entry_def]
     fn content_entry_definition() -> ValidatingEntryType {
-        content::entry::module_entry_def()
+        content::entry::section_entry_def()
     }
 
     #[zome_fn("hc_public")]
     fn create_content(
         name: String,
-        module_address: Address,
+        section_address: Address,
         url: String,
         timestamp: u64,
         description: String,
     ) -> ZomeApiResult<Address> {
-        content::handlers::create(name, module_address, url, timestamp, description)
+        content::handlers::create(name, section_address, url, timestamp, description)
     }
 
     #[zome_fn("hc_public")]
-    fn get_contents(module_address: Address) -> ZomeApiResult<Vec<Address>> {
-        content::handlers::get_contents(&module_address)
+    fn get_contents(section_address: Address) -> ZomeApiResult<Vec<Address>> {
+        content::handlers::get_contents(&section_address)
     }
     #[zome_fn("hc_public")]
     fn delete_content(content_address: Address) -> ZomeApiResult<Address> {

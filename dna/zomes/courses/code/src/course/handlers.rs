@@ -24,7 +24,7 @@ pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
 
 pub fn update(
     title: String,
-    modules_addresses: Vec<Address>,
+    sections_addresses: Vec<Address>,
     course_address: &Address,
 ) -> ZomeApiResult<Address> {
     let course: Course = hdk::utils::get_as_type(course_address.clone())?;
@@ -33,7 +33,7 @@ pub fn update(
         title,
         course.teacher_address,
         course.timestamp,
-        modules_addresses,
+        sections_addresses,
     );
     let new_version_course_entry = new_version_course.entry();
 
@@ -85,15 +85,15 @@ pub fn get_my_enrolled_courses() -> ZomeApiResult<Vec<Address>> {
     Ok(links.addresses())
 }
 
-pub fn add_module_to_course(
+pub fn add_section_to_course(
     course_address: &Address,
-    module_address: &Address,
+    section_address: &Address,
 ) -> ZomeApiResult<Address> {
     let current_course = hdk::get_entry(course_address).unwrap().unwrap();
     if let Entry::App(_, current_course) = current_course {
         let mut course_entry = Course::try_from(current_course.clone())
             .expect("Entry at this address is not Course. You sent a wrong address");
-        course_entry.modules.push(module_address.clone());
+        course_entry.sections.push(section_address.clone());
         hdk::update_entry(
             Entry::App("course".into(), course_entry.into()),
             course_address,

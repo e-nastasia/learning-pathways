@@ -11,7 +11,7 @@ use super::validation::validate_course_title;
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Course {
     pub title: String,
-    pub modules: Vec<Address>,
+    pub sections: Vec<Address>,
     pub timestamp: u64,
     pub teacher_address: Address,
 }
@@ -22,15 +22,15 @@ impl Course {
         Course {
             title: title,
             teacher_address: owner,
-            modules: Vec::default(),
+            sections: Vec::default(),
             timestamp: timestamp,
         }
     }
-    pub fn from(title: String, owner: Address, timestamp: u64, modules: Vec<Address>) -> Self {
+    pub fn from(title: String, owner: Address, timestamp: u64, sections: Vec<Address>) -> Self {
         Course {
             title: title,
             teacher_address: owner,
-            modules: modules,
+            sections: sections,
             timestamp: timestamp,
         }
     }
