@@ -1,15 +1,10 @@
 use hdk::{
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
-        dna::entry_types::Sharing,
-        entry::Entry,
-        validation::EntryValidationData,
+        dna::entry_types::Sharing, entry::Entry, validation::EntryValidationData,
     },
-    holochain_json_api::{
-        error::JsonError, 
-        json::JsonString
-    },
-    holochain_persistence_api::cas::content::Address
+    holochain_json_api::{error::JsonError, json::JsonString},
+    holochain_persistence_api::cas::content::Address,
 };
 
 use super::validation::validate_course_title;

@@ -1,12 +1,8 @@
-use hdk::{
-    entry_definition::ValidatingEntryType,
-    error::ZomeApiResult,
-};
+use hdk::{entry_definition::ValidatingEntryType, error::ZomeApiResult};
 
 use hdk::holochain_core_types::dna::entry_types::Sharing;
-use hdk::holochain_core_types::{entry::Entry,};
+use hdk::holochain_core_types::entry::Entry;
 use hdk::holochain_persistence_api::cas::content::Address;
-
 
 //// Anchor Definition : This Anchor will be used to query all courses
 pub fn anchor_entry_def() -> ValidatingEntryType {

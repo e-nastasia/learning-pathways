@@ -1,6 +1,6 @@
+use hdk::error::ZomeApiResult;
 use hdk::holochain_persistence_api::cas::content::Address;
 use hdk::prelude::LinkMatch;
-use hdk::error::ZomeApiResult;
 
 use super::entry::Content;
 

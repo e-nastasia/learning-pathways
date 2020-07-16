@@ -1,7 +1,7 @@
 use crate::course::entry::Course;
 use crate::section::entry::Module;
-use hdk::holochain_persistence_api::cas::content::Address;
 use hdk::error::{ZomeApiError, ZomeApiResult};
+use hdk::holochain_persistence_api::cas::content::Address;
 
 /////////////////////////// Validations
 pub fn validate_author(

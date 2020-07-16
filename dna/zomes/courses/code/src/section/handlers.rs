@@ -1,8 +1,7 @@
 use hdk::prelude::*;
 
-use crate::course::entry::Course;
 use super::entry::Module;
-
+use crate::course::entry::Course;
 
 pub fn create(title: String, course_address: &Address, timestamp: u64) -> ZomeApiResult<Address> {
     let mut course: Course = hdk::utils::get_as_type(course_address.clone())?;

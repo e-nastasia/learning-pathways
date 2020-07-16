@@ -1,14 +1,11 @@
-use hdk::{
-    error::ZomeApiResult,
-    AGENT_ADDRESS,
-};
 use hdk::holochain_core_types::entry::Entry;
 use hdk::holochain_persistence_api::cas::content::Address;
 use hdk::prelude::LinkMatch;
+use hdk::{error::ZomeApiResult, AGENT_ADDRESS};
 use std::convert::TryFrom;
 
+use super::anchor::{anchor_address, anchor_entry};
 use super::entry::Course;
-use super::anchor::{anchor_entry, anchor_address};
 
 pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
     let anchor_entry = anchor_entry();
