@@ -1,4 +1,5 @@
 use hdk::prelude::*;
+use holochain_entry_utils::HolochainEntry;
 
 use super::validation::validate_author;
 
@@ -9,13 +10,13 @@ pub struct Content {
     pub url: String,
     pub description: String,
     pub timestamp: u64,
-    pub section_address: Address,
+    pub section_anchor_address: Address,
 }
 
 impl Content {
     pub fn new(
         name: String,
-        section_address: Address,
+        section_anchor_address: Address,
         url: String,
         timestamp: u64,
         description: String,
@@ -25,18 +26,20 @@ impl Content {
             url,
             description,
             timestamp,
-            section_address,
+            section_anchor_address,
         }
     }
+}
 
-    pub fn entry(&self) -> Entry {
-        Entry::App("content".into(), self.into())
+impl HolochainEntry for Content {
+    fn entry_type() -> String {
+        String::from("content")
     }
 }
 
 pub fn section_entry_def() -> ValidatingEntryType {
     entry!(
-        name: "content",
+        name: Content::entry_type(),
         description: "this is the content for each section",
         sharing: Sharing::Public,
         validation_package: || {
@@ -45,18 +48,18 @@ pub fn section_entry_def() -> ValidatingEntryType {
         validation: | validation_data: hdk::EntryValidationData<Content>| {
             match  validation_data {
                 EntryValidationData::Create { entry, validation_data } => {
-                    validate_author(&validation_data.sources(), &entry.section_address)?;
+                    validate_author(&validation_data.sources(), &entry.section_anchor_address)?;
                     Ok(())
                 },
                 EntryValidationData::Modify { new_entry, old_entry, validation_data, .. } => {
-                    if new_entry.section_address != old_entry.section_address {
+                    if new_entry.section_anchor_address != old_entry.section_anchor_address {
                         return Err(String::from("Cannot change section to which this content belongs to"));
                     }
-                    validate_author(&validation_data.sources(), &new_entry.section_address)?;
+                    validate_author(&validation_data.sources(), &new_entry.section_anchor_address)?;
                     Ok(())
                 },
                 EntryValidationData::Delete { old_entry, validation_data, .. } => {
-                    validate_author(&validation_data.sources(), &old_entry.section_address)?;
+                    validate_author(&validation_data.sources(), &old_entry.section_anchor_address)?;
 
                     Ok(())
                 }

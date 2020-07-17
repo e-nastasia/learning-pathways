@@ -1,37 +1,42 @@
 use hdk::{
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
-        dna::entry_types::Sharing, entry::Entry, validation::EntryValidationData,
+        dna::entry_types::Sharing, validation::EntryValidationData,
     },
     holochain_json_api::{error::JsonError, json::JsonString},
     holochain_persistence_api::cas::content::Address,
 };
+use holochain_entry_utils::HolochainEntry;
 
 use super::validation::{validate_author, validate_section_title};
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Section {
     pub title: String,
-    pub timestamp: u64,
     pub course_address: Address,
+    pub timestamp: u64,
+    pub anchor_address: Address,
 }
 
 impl Section {
-    pub fn new(title: String, course_address: Address, timestamp: u64) -> Self {
+    pub fn new(title: String, course_address: Address, timestamp: u64, anchor_address: Address) -> Self {
         Section {
             title: title,
             course_address: course_address,
             timestamp: timestamp,
+            anchor_address: anchor_address,
         }
     }
+}
 
-    pub fn entry(&self) -> Entry {
-        Entry::App("section".into(), self.into())
+impl HolochainEntry for Section {
+    fn entry_type() -> String {
+        String::from("section")
     }
 }
 
 pub fn entry_def() -> ValidatingEntryType {
     entry!(
-        name: "section",
+        name: Section::entry_type(),
         description: "this is the definition of section",
         sharing: Sharing::Public,
         validation_package: || {
@@ -62,17 +67,8 @@ pub fn entry_def() -> ValidatingEntryType {
                 }
             }
         },
-        links:[
-            to!(
-                "content",
-                link_type: "section->contents",
-                validation_package:||{
-                    hdk::ValidationPackageDefinition::Entry
-                },
-                validation:|_validation_data: hdk::LinkValidationData|{
-                    Ok(())
-                }
-            )
-        ]
+        // Since now Section entry is a data entry that is hidden behind the SectionAnchor,
+        // there won't be any links that it has.
+        links:[]
     )
 }

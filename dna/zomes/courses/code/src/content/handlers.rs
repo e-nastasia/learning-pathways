@@ -1,45 +1,49 @@
 use hdk::error::ZomeApiResult;
 use hdk::holochain_persistence_api::cas::content::Address;
 use hdk::prelude::LinkMatch;
+use holochain_entry_utils::HolochainEntry;
 
 use super::entry::Content;
+use crate::section::anchor::SECTION_TO_CONTENT_LINK;
+
 
 pub fn create(
     name: String,
-    section_address: Address,
+    section_anchor_address: Address,
     url: String,
     timestamp: u64,
     description: String,
 ) -> ZomeApiResult<Address> {
-    let new_content = Content::new(name, section_address.clone(), url, timestamp, description);
+    let new_content = Content::new(name, section_anchor_address.clone(), url, timestamp, description);
     let new_content_entry = new_content.entry();
     let new_content_address = hdk::commit_entry(&new_content_entry)?;
     hdk::link_entries(
-        &section_address,
+        &section_anchor_address,
         &new_content_address,
-        "section->contents",
+        SECTION_TO_CONTENT_LINK,
         "",
     )?;
 
     Ok(new_content_address)
 }
 
-pub fn get_contents(section_address: &Address) -> ZomeApiResult<Vec<Address>> {
+pub fn get_contents(section_anchor_address: &Address) -> ZomeApiResult<Vec<Address>> {
     let links = hdk::get_links(
-        &section_address,
-        LinkMatch::Exactly("section->contents"),
+        &section_anchor_address,
+        LinkMatch::Exactly(SECTION_TO_CONTENT_LINK),
         LinkMatch::Any,
     )?;
 
     Ok(links.addresses())
 }
+
 pub fn delete(content_address: Address) -> ZomeApiResult<Address> {
     let content: Content = hdk::utils::get_as_type(content_address.clone())?;
 
     hdk::remove_link(
-        &content.section_address,
+        &content.section_anchor_address,
         &content_address,
-        "section->contents",
+        SECTION_TO_CONTENT_LINK,
         "",
     )?;
 

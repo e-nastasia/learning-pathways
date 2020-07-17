@@ -85,15 +85,15 @@ pub fn get_my_enrolled_courses() -> ZomeApiResult<Vec<Address>> {
     Ok(links.addresses())
 }
 
-pub fn add_section_to_course(
+pub fn add_section(
     course_address: &Address,
-    section_address: &Address,
+    section_anchor_address: &Address,
 ) -> ZomeApiResult<Address> {
     let current_course = hdk::get_entry(course_address).unwrap().unwrap();
     if let Entry::App(_, current_course) = current_course {
         let mut course_entry = Course::try_from(current_course.clone())
             .expect("Entry at this address is not Course. You sent a wrong address");
-        course_entry.sections.push(section_address.clone());
+        course_entry.sections.push(section_anchor_address.clone());
         hdk::update_entry(
             Entry::App("course".into(), course_entry.into()),
             course_address,
@@ -101,6 +101,15 @@ pub fn add_section_to_course(
     } else {
         panic!("This address is not a valid address")
     }
+}
+
+pub fn delete_section(
+    course_address: &Address,
+    _section_anchor_address: &Address,
+) -> ZomeApiResult<Address> {
+    // TODO: will be implemented after section refactoring
+    // returning course address as a placeholder
+    Ok(course_address.clone())
 }
 
 // NOTE: fun fact for fellow English learners: there isn't a typo because both "enrol" and "enroll" are valid!

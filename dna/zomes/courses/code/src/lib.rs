@@ -24,6 +24,7 @@ use hdk_proc_macros::zome;
 mod content;
 mod course;
 mod section;
+mod anchor_trait;
 
 #[zome]
 mod course_zome {
@@ -104,6 +105,11 @@ mod course_zome {
 
     /**************************** Section Entry Definition & Functions */
     #[entry_def]
+    fn section_anchor_entry_definition() -> ValidatingEntryType {
+        section::anchor::section_anchor_def()
+    }
+
+    #[entry_def]
     fn section_entry_definition() -> ValidatingEntryType {
         section::entry::entry_def()
     }
@@ -118,13 +124,13 @@ mod course_zome {
     }
 
     #[zome_fn("hc_public")]
-    fn update_section(title: String, section_address: Address) -> ZomeApiResult<Address> {
-        section::handlers::update(title, &section_address)
+    fn update_section(title: String, section_anchor_address: Address) -> ZomeApiResult<Address> {
+        section::handlers::update(title, &section_anchor_address)
     }
 
     #[zome_fn("hc_public")]
-    fn delete_section(section_address: Address) -> ZomeApiResult<Address> {
-        section::handlers::delete(section_address)
+    fn delete_section(section_anchor_address: Address) -> ZomeApiResult<Address> {
+        section::handlers::delete(section_anchor_address)
     }
 
     /**************************** Content Zome Functions */
@@ -136,17 +142,17 @@ mod course_zome {
     #[zome_fn("hc_public")]
     fn create_content(
         name: String,
-        section_address: Address,
+        section_anchor_address: Address,
         url: String,
         timestamp: u64,
         description: String,
     ) -> ZomeApiResult<Address> {
-        content::handlers::create(name, section_address, url, timestamp, description)
+        content::handlers::create(name, section_anchor_address, url, timestamp, description)
     }
 
     #[zome_fn("hc_public")]
-    fn get_contents(section_address: Address) -> ZomeApiResult<Vec<Address>> {
-        content::handlers::get_contents(&section_address)
+    fn get_contents(section_anchor_address: Address) -> ZomeApiResult<Vec<Address>> {
+        content::handlers::get_contents(&section_anchor_address)
     }
     #[zome_fn("hc_public")]
     fn delete_content(content_address: Address) -> ZomeApiResult<Address> {
