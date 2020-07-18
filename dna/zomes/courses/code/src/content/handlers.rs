@@ -6,7 +6,6 @@ use holochain_entry_utils::HolochainEntry;
 use super::entry::Content;
 use crate::section::anchor::SECTION_TO_CONTENT_LINK;
 
-
 pub fn create(
     name: String,
     section_anchor_address: Address,
@@ -15,8 +14,7 @@ pub fn create(
     description: String,
 ) -> ZomeApiResult<Address> {
     let new_content = Content::new(name, section_anchor_address.clone(), url, timestamp, description);
-    let new_content_entry = new_content.entry();
-    let new_content_address = hdk::commit_entry(&new_content_entry)?;
+    let new_content_address = hdk::commit_entry(&new_content.entry())?;
     hdk::link_entries(
         &section_anchor_address,
         &new_content_address,
@@ -37,6 +35,39 @@ pub fn get_contents(section_anchor_address: &Address) -> ZomeApiResult<Vec<Addre
     Ok(links.addresses())
 }
 
+pub fn update(
+    content_address: Address,
+    name: String,
+    url: String,
+    description: String,
+) -> ZomeApiResult<Address> {
+    let mut content: Content = hdk::utils::get_as_type(content_address.clone())?;
+    content.description = description;
+    content.name = name;
+    content.url = url;
+    // commit updates to the content entry and get it's new address
+    let updated_content_address = hdk::update_entry(content.clone().entry(), &content_address)?;
+
+    // remove link to previous version of content
+    hdk::remove_link(
+        &content.section_anchor_address,
+        &content_address,
+        SECTION_TO_CONTENT_LINK,
+        "",
+    )?;
+
+    // create link to the updated version of content
+    hdk::link_entries(
+        &content.section_anchor_address,
+        &updated_content_address,
+        SECTION_TO_CONTENT_LINK,
+        "",
+    )?;
+
+    // return address of the updated content entry
+    Ok(updated_content_address)
+}
+
 pub fn delete(content_address: Address) -> ZomeApiResult<Address> {
     let content: Content = hdk::utils::get_as_type(content_address.clone())?;
 
@@ -50,15 +81,4 @@ pub fn delete(content_address: Address) -> ZomeApiResult<Address> {
     hdk::remove_entry(&content_address)
 }
 
-pub fn update(
-    content_address: Address,
-    name: String,
-    url: String,
-    description: String,
-) -> ZomeApiResult<Address> {
-    let mut content: Content = hdk::utils::get_as_type(content_address.clone())?;
-    content.description = description;
-    content.name = name;
-    content.url = url;
-    hdk::update_entry(content.entry(), &content_address)
-}
+
