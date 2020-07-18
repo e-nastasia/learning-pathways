@@ -46,8 +46,13 @@ mod course_zome {
 
     /**************************** Course Entry Definition and Functions */
     #[entry_def]
-    fn anchor_entry_definition() -> ValidatingEntryType {
-        course::anchor::anchor_entry_def()
+    fn course_catalog_anchor_entry_definition() -> ValidatingEntryType {
+        course::catalog_anchor::catalog_anchor_entry_def()
+    }
+
+    #[entry_def]
+    fn course_anchor_definition() -> ValidatingEntryType {
+        course::anchor::course_anchor_def()
     }
 
     #[entry_def]
@@ -69,19 +74,19 @@ mod course_zome {
     fn update_course(
         title: String,
         sections_addresses: Vec<Address>,
-        course_address: Address,
+        course_anchor_address: Address,
     ) -> ZomeApiResult<Address> {
-        course::handlers::update(title, sections_addresses, &course_address)
+        course::handlers::update(title, sections_addresses, &course_anchor_address)
     }
 
     #[zome_fn("hc_public")]
-    fn delete_course(course_address: Address) -> ZomeApiResult<Address> {
-        course::handlers::delete(course_address)
+    fn delete_course(course_anchor_address: Address) -> ZomeApiResult<Address> {
+        course::handlers::delete(course_anchor_address)
     }
 
     #[zome_fn("hc_public")]
     fn get_all_courses() -> ZomeApiResult<Vec<Address>> {
-        course::handlers::list()
+        course::handlers::list_all_courses()
     }
 
     #[zome_fn("hc_public")]
@@ -95,13 +100,13 @@ mod course_zome {
     }
 
     #[zome_fn("hc_public")]
-    fn enrol_in_course(course_address: Address) -> ZomeApiResult<Address> {
-        course::handlers::enrol_in_course(course_address)
+    fn enrol_in_course(course_anchor_address: Address) -> ZomeApiResult<Address> {
+        course::handlers::enrol_in_course(course_anchor_address)
     }
 
     #[zome_fn("hc_public")]
-    fn get_all_students(course_address: Address) -> ZomeApiResult<Vec<Address>> {
-        course::handlers::get_students(course_address)
+    fn get_all_students(course_anchor_address: Address) -> ZomeApiResult<Vec<Address>> {
+        course::handlers::get_students(course_anchor_address)
     }
 
     /**************************** Section Entry Definition & Functions */

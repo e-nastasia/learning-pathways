@@ -1,42 +1,45 @@
 use hdk::{
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
-        dna::entry_types::Sharing, entry::Entry, validation::EntryValidationData,
+        dna::entry_types::Sharing, validation::EntryValidationData,
     },
     holochain_json_api::{error::JsonError, json::JsonString},
     holochain_persistence_api::cas::content::Address,
 };
+use holochain_entry_utils::HolochainEntry;
 
 use super::validation::validate_course_title;
+
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Course {
     pub title: String,
     pub sections: Vec<Address>,
-    pub timestamp: u64,
     pub teacher_address: Address,
+    pub timestamp: u64,
+    pub anchor_address: Address,
+}
+
+impl HolochainEntry for Course {
+    fn entry_type() -> String {
+        String::from("course")
+    }
 }
 
 impl Course {
-    // Constrcuctor
-    pub fn new(title: String, owner: Address, timestamp: u64) -> Self {
+    pub fn new(
+        title: String,
+        sections: Vec<Address>,
+        teacher_address: Address,
+        timestamp: u64,
+        anchor_address: Address,
+    ) -> Self {
         Course {
             title: title,
-            teacher_address: owner,
-            sections: Vec::default(),
-            timestamp: timestamp,
-        }
-    }
-    pub fn from(title: String, owner: Address, timestamp: u64, sections: Vec<Address>) -> Self {
-        Course {
-            title: title,
-            teacher_address: owner,
             sections: sections,
+            teacher_address: teacher_address,
             timestamp: timestamp,
+            anchor_address: anchor_address,
         }
-    }
-
-    pub fn entry(&self) -> Entry {
-        Entry::App("course".into(), self.into())
     }
 }
 
@@ -80,40 +83,7 @@ pub fn course_entry_def() -> ValidatingEntryType {
                 }
             }
         },
-        links: [
-          from!( // to query all the courses of a user(all courses that a user is the teacher or owner of)
-              "%agent_id",
-              link_type: "teacher->courses",
-              validation_package: || {
-                  hdk::ValidationPackageDefinition::Entry
-              }              ,
-              validation: | _validation_data: hdk::LinkValidationData | {
-                // TODO: Homework. Implement validation rules if required.
-                Ok(())
-              }
-          ),
-          from!( // to query all courses that one user enrolled
-            "%agent_id",
-            link_type: "student->courses",
-            validation_package: || {
-                hdk::ValidationPackageDefinition::Entry
-            }              ,
-            validation: | _validation_data: hdk::LinkValidationData | {
-                // TODO: Homework. Implement validation rules if required.
-               Ok(())
-            }
-        ),
-        to!( // to query all enrolled user for a course
-            "%agent_id",
-            link_type: "course->students",
-            validation_package: || {
-                hdk::ValidationPackageDefinition::Entry
-            },
-            validation: | _validation_data: hdk::LinkValidationData | {
-                // TODO: Homework. Implement validation rules if required.
-                Ok(())
-            }
-        )
-      ]
+        // All links that course should have are defined for CoureAnchor and so this entry doesn't have ny
+        links: []
     )
 }

@@ -11,7 +11,6 @@ pub trait AnchorTrait: TryFrom<JsonString> + Into<JsonString> + Clone {
     }
 
     fn address(&self) -> ZomeApiResult<Address> {
-        let addrss = hdk::commit_entry(&self.clone().entry())?;
-        return Ok(addrss);
+        hdk::entry_address(&self.clone().entry())
     }
 }
