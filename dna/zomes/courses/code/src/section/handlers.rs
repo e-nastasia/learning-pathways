@@ -72,7 +72,6 @@ pub fn update(title: String, section_anchor_address: &Address) -> ZomeApiResult<
     Ok(new_section_address)
 }
 
-// TODO: Q: why does delete own section_anchor_address and update accepts only reference? is there a particular logic behind it?
 pub fn delete(section_anchor_address: Address) -> ZomeApiResult<Address> {
     let section_anchor: SectionAnchor = hdk::utils::get_as_type(section_anchor_address.clone())?;
 
