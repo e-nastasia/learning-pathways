@@ -83,6 +83,7 @@ mod course_zome {
     fn get_all_courses() -> ZomeApiResult<Vec<Address>> {
         course::handlers::list()
     }
+
     #[zome_fn("hc_public")]
     fn get_my_courses() -> ZomeApiResult<Vec<Address>> {
         course::handlers::get_my_courses()
@@ -154,10 +155,6 @@ mod course_zome {
     fn get_contents(section_anchor_address: Address) -> ZomeApiResult<Vec<Address>> {
         content::handlers::get_contents(&section_anchor_address)
     }
-    #[zome_fn("hc_public")]
-    fn delete_content(content_address: Address) -> ZomeApiResult<Address> {
-        content::handlers::delete(content_address)
-    }
 
     #[zome_fn("hc_public")]
     fn update_content(
@@ -167,5 +164,10 @@ mod course_zome {
         description: String,
     ) -> ZomeApiResult<Address> {
         content::handlers::update(content_address, name, url, description)
+    }
+
+    #[zome_fn("hc_public")]
+    fn delete_content(content_address: Address) -> ZomeApiResult<Address> {
+        content::handlers::delete(content_address)
     }
 }
