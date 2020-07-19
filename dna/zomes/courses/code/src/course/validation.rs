@@ -1,4 +1,4 @@
-use hdk::{ValidationData, LinkValidationData};
+use hdk::{LinkValidationData, ValidationData};
 
 pub fn validate_course_title(title: &str) -> Result<(), String> {
     if title.len() > 50 {
@@ -22,11 +22,13 @@ pub fn validate_anchor_delete(_validation_data: ValidationData) -> Result<(), St
 
 pub fn validate_anchor_link(validation_data: LinkValidationData) -> Result<(), String> {
     match validation_data {
-        hdk::LinkValidationData::LinkAdd { link: _, validation_data: _ } => {
-            Ok(())
-        },
-        hdk::LinkValidationData::LinkRemove { link: _, validation_data: _ } => {
-            Ok(())
-        },
+        hdk::LinkValidationData::LinkAdd {
+            link: _,
+            validation_data: _,
+        } => Ok(()),
+        hdk::LinkValidationData::LinkRemove {
+            link: _,
+            validation_data: _,
+        } => Ok(()),
     }
 }

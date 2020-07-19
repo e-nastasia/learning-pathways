@@ -13,7 +13,13 @@ pub fn create(
     timestamp: u64,
     description: String,
 ) -> ZomeApiResult<Address> {
-    let new_content = Content::new(name, section_anchor_address.clone(), url, timestamp, description);
+    let new_content = Content::new(
+        name,
+        section_anchor_address.clone(),
+        url,
+        timestamp,
+        description,
+    );
     let new_content_address = hdk::commit_entry(&new_content.entry())?;
     hdk::link_entries(
         &section_anchor_address,
@@ -80,5 +86,3 @@ pub fn delete(content_address: Address) -> ZomeApiResult<Address> {
 
     hdk::remove_entry(&content_address)
 }
-
-

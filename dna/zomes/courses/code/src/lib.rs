@@ -21,10 +21,10 @@ use hdk_proc_macros::zome;
 //use std::convert::TryInto;
 
 /******************************** */
+mod anchor_trait;
 mod content;
 mod course;
 mod section;
-mod anchor_trait;
 
 #[zome]
 mod course_zome {

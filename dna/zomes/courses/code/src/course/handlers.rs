@@ -4,14 +4,12 @@ use hdk::{error::ZomeApiResult, AGENT_ADDRESS};
 use holochain_entry_utils::HolochainEntry;
 
 use super::anchor::{
-    CourseAnchor, 
-    COURSE_ANCHOR_TO_STUDENT_LINK, 
-    STUDENT_TO_COURSE_ANCHOR_LINK,
+    CourseAnchor, COURSE_ANCHOR_TO_STUDENT_LINK, STUDENT_TO_COURSE_ANCHOR_LINK,
     TEACHER_TO_COURSE_ANCHOR_LINK,
 };
-use crate::anchor_trait::AnchorTrait;
 use super::catalog_anchor::CourseCatalogAnchor;
 use super::entry::Course;
+use crate::anchor_trait::AnchorTrait;
 
 pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
     // if catalog anchor already exists, this function would just return it's address without actually writing anything
@@ -84,7 +82,11 @@ fn get_latest_course(course_anchor_address: &Address) -> ZomeApiResult<(Course, 
 }
 
 // NOTE: this function isn't public because it's only needed in the current module
-fn commit_update(course: Course, previous_course_address: &Address, course_anchor_address: &Address) -> ZomeApiResult<Address> {
+fn commit_update(
+    course: Course,
+    previous_course_address: &Address,
+    course_anchor_address: &Address,
+) -> ZomeApiResult<Address> {
     // commit updated course to DHT and get it's new address
     let new_course_address = hdk::update_entry(course.entry(), previous_course_address)?;
 
@@ -109,8 +111,8 @@ fn commit_update(course: Course, previous_course_address: &Address, course_ancho
 
 pub fn update(
     title: String,
-    // NOTE(e-nastasia): since we have separate methods for section management 
-    // (add_section and delete_section) we might not need to have sections_addresses 
+    // NOTE(e-nastasia): since we have separate methods for section management
+    // (add_section and delete_section) we might not need to have sections_addresses
     // here because it leaves us with inconsistent API. This needs further discussion.
     sections_addresses: Vec<Address>,
     course_anchor_address: &Address,
@@ -120,8 +122,12 @@ pub fn update(
     // update this course
     previous_course.title = title;
     previous_course.sections = sections_addresses;
-    
-    commit_update(previous_course, &previous_course_address, course_anchor_address)
+
+    commit_update(
+        previous_course,
+        &previous_course_address,
+        course_anchor_address,
+    )
 }
 
 pub fn delete(course_anchor_address: Address) -> ZomeApiResult<Address> {
@@ -201,10 +207,16 @@ pub fn add_section(
 ) -> ZomeApiResult<Address> {
     let (mut previous_course, previous_course_address) = get_latest_course(course_anchor_address)?;
 
-    previous_course.sections.push(section_anchor_address.clone());
+    previous_course
+        .sections
+        .push(section_anchor_address.clone());
     // we won't use this new address but we need to save method's result somewhere
     // so this variable is prefixed with _
-    let _new_course_address = commit_update(previous_course, &previous_course_address, course_anchor_address)?;
+    let _new_course_address = commit_update(
+        previous_course,
+        &previous_course_address,
+        course_anchor_address,
+    )?;
 
     Ok(course_anchor_address.clone())
 }
@@ -218,7 +230,11 @@ pub fn delete_section(
     previous_course.sections.remove_item(section_anchor_address);
     // we won't use this new address but we need to save method's result somewhere
     // so this variable is prefixed with _
-    let _new_course_address = commit_update(previous_course, &previous_course_address, course_anchor_address)?;
+    let _new_course_address = commit_update(
+        previous_course,
+        &previous_course_address,
+        course_anchor_address,
+    )?;
 
     Ok(course_anchor_address.clone())
 }
@@ -226,8 +242,18 @@ pub fn delete_section(
 // NOTE: fun fact for fellow English learners: there isn't a typo because both "enrol" and "enroll" are valid!
 //  See: https://grammarist.com/spelling/enrol-enroll/ for more details
 pub fn enrol_in_course(course_anchor_address: Address) -> ZomeApiResult<Address> {
-    hdk::link_entries(&AGENT_ADDRESS, &course_anchor_address, STUDENT_TO_COURSE_ANCHOR_LINK, "")?;
-    hdk::link_entries(&course_anchor_address, &AGENT_ADDRESS, COURSE_ANCHOR_TO_STUDENT_LINK, "")
+    hdk::link_entries(
+        &AGENT_ADDRESS,
+        &course_anchor_address,
+        STUDENT_TO_COURSE_ANCHOR_LINK,
+        "",
+    )?;
+    hdk::link_entries(
+        &course_anchor_address,
+        &AGENT_ADDRESS,
+        COURSE_ANCHOR_TO_STUDENT_LINK,
+        "",
+    )
 }
 
 pub fn get_students(course_anchor_address: Address) -> ZomeApiResult<Vec<Address>> {

@@ -1,6 +1,6 @@
 use super::{entry::Section, validation};
-use crate::content::entry::Content;
 use crate::anchor_trait::AnchorTrait;
+use crate::content::entry::Content;
 
 use hdk::prelude::*;
 use holochain_entry_utils::HolochainEntry;

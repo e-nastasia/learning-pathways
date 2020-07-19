@@ -1,8 +1,6 @@
 use hdk::{
     entry_definition::ValidatingEntryType,
-    holochain_core_types::{
-        dna::entry_types::Sharing, validation::EntryValidationData,
-    },
+    holochain_core_types::{dna::entry_types::Sharing, validation::EntryValidationData},
     holochain_json_api::{error::JsonError, json::JsonString},
     holochain_persistence_api::cas::content::Address,
 };
@@ -18,7 +16,12 @@ pub struct Section {
 }
 
 impl Section {
-    pub fn new(title: String, course_address: Address, timestamp: u64, anchor_address: Address) -> Self {
+    pub fn new(
+        title: String,
+        course_address: Address,
+        timestamp: u64,
+        anchor_address: Address,
+    ) -> Self {
         Section {
             title: title,
             course_address: course_address,

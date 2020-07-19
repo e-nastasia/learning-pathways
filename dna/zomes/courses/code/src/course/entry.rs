@@ -1,8 +1,6 @@
 use hdk::{
     entry_definition::ValidatingEntryType,
-    holochain_core_types::{
-        dna::entry_types::Sharing, validation::EntryValidationData,
-    },
+    holochain_core_types::{dna::entry_types::Sharing, validation::EntryValidationData},
     holochain_json_api::{error::JsonError, json::JsonString},
     holochain_persistence_api::cas::content::Address,
 };

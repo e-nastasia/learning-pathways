@@ -1,11 +1,8 @@
-use hdk::{
-    entry_definition::ValidatingEntryType,
-    holochain_core_types::dna::entry_types::Sharing,
-};
 use hdk::prelude::*;
+use hdk::{entry_definition::ValidatingEntryType, holochain_core_types::dna::entry_types::Sharing};
 
-use crate::anchor_trait::AnchorTrait;
 use super::anchor::CourseAnchor;
+use crate::anchor_trait::AnchorTrait;
 
 #[derive(Serialize, Deserialize, Debug, self::DefaultJson, Clone)]
 pub struct CourseCatalogAnchor {

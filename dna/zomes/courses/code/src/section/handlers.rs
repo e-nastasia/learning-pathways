@@ -1,24 +1,29 @@
 use hdk::prelude::*;
 use holochain_entry_utils::HolochainEntry;
 
-use crate::anchor_trait::AnchorTrait;
-use crate::course::entry::Course;
-use crate::course;
-use super::entry::Section;
 use super::anchor::SectionAnchor;
+use super::entry::Section;
+use crate::anchor_trait::AnchorTrait;
+use crate::course;
+use crate::course::entry::Course;
 
 pub fn create(title: String, course_address: &Address, timestamp: u64) -> ZomeApiResult<Address> {
     // retrieve course at course_address. If this address isn't valid, we'll fail here, so it serves as input validation
     // we won't be using this course instance so we prefix it with _ symbol
-    let  _course: Course = hdk::utils::get_as_type(course_address.clone())?;
-    
+    let _course: Course = hdk::utils::get_as_type(course_address.clone())?;
+
     // initialize SectionAnchor instance
     let section_anchor = SectionAnchor::new(title.clone(), course_address.clone(), timestamp);
     // commit SectionAnchor to DHT
     let section_anchor_address = hdk::commit_entry(&section_anchor.entry())?;
 
     // initialize Section instance without commiting it to DHT: we'll need it to commit anchor
-    let new_section = Section::new(title, course_address.clone(), timestamp, section_anchor_address.clone());
+    let new_section = Section::new(
+        title,
+        course_address.clone(),
+        timestamp,
+        section_anchor_address.clone(),
+    );
     // commit Section to DHT
     let new_section_address = hdk::commit_entry(&new_section.entry())?;
 
@@ -40,10 +45,11 @@ pub fn update(title: String, section_anchor_address: &Address) -> ZomeApiResult<
         LinkMatch::Exactly(&SectionAnchor::link_type()),
         // this parameter is for link tags. since we don't tag section anchor link (see method create above)
         //  we can ask for all tags
-        LinkMatch::Any, 
-    )?.addresses();
+        LinkMatch::Any,
+    )?
+    .addresses();
 
-    // Q: could we assume that this list would only have a single entry? 
+    // Q: could we assume that this list would only have a single entry?
     //  because there's only one agent in the entire DNA that could make that change: the one listed as course teacher.
     let previous_section_address = &section_addresses[0];
     let mut previous_section: Section = hdk::utils::get_as_type(previous_section_address.clone())?;
@@ -51,7 +57,8 @@ pub fn update(title: String, section_anchor_address: &Address) -> ZomeApiResult<
     // update the section
     previous_section.title = title;
     // commit this update to the DHT.
-    let new_section_address = hdk::update_entry(previous_section.entry(), &previous_section_address)?;
+    let new_section_address =
+        hdk::update_entry(previous_section.entry(), &previous_section_address)?;
 
     // remove link to previous version of section
     hdk::remove_link(

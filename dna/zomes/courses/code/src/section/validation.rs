@@ -1,5 +1,5 @@
 use hdk::prelude::*;
-use hdk::{ValidationData, LinkValidationData};
+use hdk::{LinkValidationData, ValidationData};
 
 use super::entry::Section;
 use crate::course::entry::Course;
@@ -37,11 +37,13 @@ pub fn validate_anchor_delete(_validation_data: ValidationData) -> Result<(), St
 
 pub fn validate_anchor_link(validation_data: LinkValidationData) -> Result<(), String> {
     match validation_data {
-        hdk::LinkValidationData::LinkAdd { link: _, validation_data: _ } => {
-            Ok(())
-        },
-        hdk::LinkValidationData::LinkRemove { link: _, validation_data: _ } => {
-            Ok(())
-        },
+        hdk::LinkValidationData::LinkAdd {
+            link: _,
+            validation_data: _,
+        } => Ok(()),
+        hdk::LinkValidationData::LinkRemove {
+            link: _,
+            validation_data: _,
+        } => Ok(()),
     }
 }
