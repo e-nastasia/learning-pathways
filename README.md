@@ -6,6 +6,17 @@ This repository is used as a learning resource for the students learning how to 
 
 Design: https://hackmd.io/_Uvrwr1HSNmfsWHqymcgvA
 
+### Development
+
+If using Microsoft Visual Studio Code, go to File > Open Workspace and then select the file `learning-pathways.code-workspace` in this repository root.
+This configuration file is there to:
+- automatically open directory with zome code and integration tests;
+- prompt you to install the recommended extensions if they're not already present;
+- configure code formatting on each save for Rust files.
+
+If using other editor, open `dna/zomes/courses/code` for Rust zome code and `dna/test` for JS integration tests.
+
+
 ### Running the tests or package the DNA
 To be able to run the tests and package the DNA
 
