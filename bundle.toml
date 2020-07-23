@@ -4,7 +4,7 @@ bridges = []
 name = "learning-pathways"
 id = "learning-pathways-instance"
 dna_hash = "QmdEvz12chBPBrpJB7KZDeh2waTArfuqmnMRrjtDxuQLUg"
-uri = "file:./dna/dist/dna.dna.json"
+uri = "file:./dna/course/dist/dna.dna.json"
 
 [[UIs]]
 name = "Learning Pathways"

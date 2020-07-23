@@ -1,10 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "dna/zomes/courses/code"
+			"path": "dna/course/zomes/courses/code"
 		},
 		{
-			"path": "dna/test"
+			"path": "dna/course/test"
 		}
 	],
 	"extensions": {

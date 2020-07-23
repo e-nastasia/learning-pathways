@@ -14,14 +14,14 @@ This configuration file is there to:
 - prompt you to install the recommended extensions if they're not already present;
 - configure code formatting on each save for Rust files.
 
-If using other editor, open `dna/zomes/courses/code` for Rust zome code and `dna/test` for JS integration tests.
+If using other editor, open `dna/course/zomes/courses/code` for Rust zome code and `dna/course/test` for JS integration tests.
 
 
 ### Running the tests or package the DNA
 To be able to run the tests and package the DNA
 
 1. From the root directory, run `nix-shell`
-2. Navigate to the `dna` folder
+2. Navigate to the `dna/course` folder
 3. Run the `hc test` command OR Run the `hc package` command
 
 ### Running a UI (or two)
@@ -41,7 +41,7 @@ To be able to run the UI and have a working version, follow the below steps:
 #### Run a single agent:
 1. Open terminal
 2. From the root directory, run `nix-shell`
-3. Navigate to `dna` folder
+3. Navigate to `dna/course` folder
 4. Run `hc run`
 5. Open another terminal and go to the `ui` folder
 6. Run `npm run ui:alice`
