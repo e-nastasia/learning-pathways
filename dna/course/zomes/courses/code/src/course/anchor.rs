@@ -50,16 +50,13 @@ pub fn course_anchor_def() -> ValidatingEntryType {
         validation: | validation_data: hdk::EntryValidationData<CourseAnchor>| {
             match validation_data{
                 EntryValidationData::Create { validation_data, .. } => {
-                    validation::validate_anchor_create(validation_data)?;
-                     Ok(())
+                    validation::anchor_create(validation_data)
                  },
                  EntryValidationData::Modify { validation_data, .. } => {
-                    validation::validate_anchor_modify(validation_data)?;
-                    Ok(())
+                    validation::anchor_modify(validation_data)
                  },
                  EntryValidationData::Delete { validation_data, .. } => {
-                    validation::validate_anchor_delete(validation_data)?;
-                    Ok(())
+                    validation::anchor_delete(validation_data)
                  }
             }
         },
@@ -73,7 +70,7 @@ pub fn course_anchor_def() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::Entry
                 },
                 validation:|validation_data: hdk::LinkValidationData|{
-                   validation::validate_anchor_link(validation_data)
+                   validation::anchor_link(validation_data)
                 }
             ),
             // link from agent that is a teacher of this course

@@ -6,7 +6,7 @@ use hdk::{
 };
 use holochain_entry_utils::HolochainEntry;
 
-use super::validation::validate_course_title;
+use super::validation;
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Course {
@@ -41,7 +41,7 @@ impl Course {
     }
 }
 
-////////////////////Course Entry Definition
+// Holochain entry definition for Course
 pub fn course_entry_def() -> ValidatingEntryType {
     entry!(
         name: "course",
@@ -53,35 +53,17 @@ pub fn course_entry_def() -> ValidatingEntryType {
         validation: | validation_data: hdk::EntryValidationData<Course>| {
             match validation_data{
                 EntryValidationData::Create { entry, validation_data } => {
-                    if !validation_data.sources().contains(&entry.teacher_address) {
-                        return Err(String::from("Only the teacher can create their courses"));
-                    }
-
-                    validate_course_title(&entry.title)
+                    validation::create(entry, validation_data)
                 },
-                EntryValidationData::Modify { new_entry, old_entry, validation_data, .. } => {
-                    if new_entry.teacher_address != old_entry.teacher_address {
-                        return Err(String::from("Cannot change the teacher of the course"));
-                    }
-
-                    if !validation_data.sources().contains(&old_entry.teacher_address) {
-                        return Err(String::from("Only the teacher can modify their courses"));
-                    }
-
-                    validate_course_title(&new_entry.title)?;
-
-                    Ok(())
+                EntryValidationData::Modify { new_entry, old_entry, old_entry_header, validation_data } => {
+                    validation::modify(new_entry, old_entry, old_entry_header, validation_data)
                 },
-                EntryValidationData::Delete {old_entry, validation_data, .. } => {
-                    if !validation_data.sources().contains(&old_entry.teacher_address) {
-                        return Err(String::from("Only the teacher can delete their courses"));
-                    }
-
-                    Ok(())
+                EntryValidationData::Delete { old_entry, old_entry_header, validation_data } => {
+                    validation::delete(old_entry, old_entry_header, validation_data)
                 }
             }
         },
-        // All links that course should have are defined for CoureAnchor and so this entry doesn't have ny
+        // All links that course should have are defined for CoureAnchor and so this entry doesn't have any
         links: []
     )
 }

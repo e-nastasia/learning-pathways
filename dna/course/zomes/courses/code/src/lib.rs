@@ -24,6 +24,7 @@ use hdk_proc_macros::zome;
 mod anchor_trait;
 mod content;
 mod course;
+mod helper;
 mod section;
 
 #[zome]
