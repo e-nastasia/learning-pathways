@@ -67,8 +67,12 @@ mod course_zome {
     }
 
     #[zome_fn("hc_public")]
-    fn get_entry(address: Address) -> ZomeApiResult<Option<Entry>> {
-        hdk::get_entry(&address)
+    fn get_latest_course_entry(
+        course_anchor_address: Address,
+    ) -> ZomeApiResult<Option<course::entry::Course>> {
+        let (course_entry, _course_entry_address) =
+            course::handlers::get_latest_course(&course_anchor_address)?;
+        Ok(Some(course_entry))
     }
 
     #[zome_fn("hc_public")]

@@ -10,6 +10,7 @@ use super::anchor::{
 use super::catalog_anchor::CourseCatalogAnchor;
 use super::entry::Course;
 use crate::anchor_trait::AnchorTrait;
+use crate::helper;
 
 pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
     // if catalog anchor already exists, this function would just return it's address without actually writing anything
@@ -63,22 +64,8 @@ pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
     Ok(new_course_address)
 }
 
-// NOTE: this function isn't public because it's only needed in the current module
-fn get_latest_course(course_anchor_address: &Address) -> ZomeApiResult<(Course, Address)> {
-    let course_addresses = hdk::get_links(
-        course_anchor_address,
-        LinkMatch::Exactly(&CourseAnchor::link_type()),
-        // this parameter is for link tags. since we don't tag course anchor link (see method create above)
-        //  we need to ask for all tags
-        LinkMatch::Any,
-    )?
-    .addresses();
-
-    // NOTE: we're assuming that this vec would only have one item in it.
-    // Question about it is added into zome README.md
-    let latest_course_address = course_addresses[0].clone();
-    let latest_course: Course = hdk::utils::get_as_type(latest_course_address.clone())?;
-    return Ok((latest_course, latest_course_address));
+pub fn get_latest_course(course_anchor_address: &Address) -> ZomeApiResult<(Course, Address)> {
+    helper::get_latest_data_entry::<Course>(course_anchor_address, &CourseAnchor::link_type())
 }
 
 // NOTE: this function isn't public because it's only needed in the current module

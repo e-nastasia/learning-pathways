@@ -6,6 +6,7 @@ use super::entry::Section;
 use crate::anchor_trait::AnchorTrait;
 use crate::course;
 use crate::course::entry::Course;
+use crate::helper;
 
 pub fn create(title: String, course_address: &Address, timestamp: u64) -> ZomeApiResult<Address> {
     // retrieve course at course_address. If this address isn't valid, we'll fail here, so it serves as input validation
@@ -39,20 +40,13 @@ pub fn create(title: String, course_address: &Address, timestamp: u64) -> ZomeAp
     Ok(section_anchor_address)
 }
 
-pub fn update(title: String, section_anchor_address: &Address) -> ZomeApiResult<Address> {
-    let section_addresses = hdk::get_links(
-        section_anchor_address,
-        LinkMatch::Exactly(&SectionAnchor::link_type()),
-        // this parameter is for link tags. since we don't tag section anchor link (see method create above)
-        //  we can ask for all tags
-        LinkMatch::Any,
-    )?
-    .addresses();
+pub fn get_latest_section(section_anchor_address: &Address) -> ZomeApiResult<(Section, Address)> {
+    helper::get_latest_data_entry::<Section>(section_anchor_address, &SectionAnchor::link_type())
+}
 
-    // Q: could we assume that this list would only have a single entry?
-    //  because there's only one agent in the entire DNA that could make that change: the one listed as course teacher.
-    let previous_section_address = &section_addresses[0];
-    let mut previous_section: Section = hdk::utils::get_as_type(previous_section_address.clone())?;
+pub fn update(title: String, section_anchor_address: &Address) -> ZomeApiResult<Address> {
+    let (mut previous_section, previous_section_address) =
+        get_latest_section(section_anchor_address)?;
 
     // update the section
     previous_section.title = title;
