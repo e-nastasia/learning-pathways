@@ -48,7 +48,7 @@ pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
     hdk::link_entries(
         &catalog_anchor_address,
         &course_anchor_address,
-        CourseAnchor::link_to(),
+        CourseCatalogAnchor::link_to(),
         "".to_string(),
     )?;
 
