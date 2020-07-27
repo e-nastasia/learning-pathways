@@ -48,18 +48,18 @@ pub fn section_entry_def() -> ValidatingEntryType {
         validation: | validation_data: hdk::EntryValidationData<Content>| {
             match  validation_data {
                 EntryValidationData::Create { entry, validation_data } => {
-                    validate_author(&validation_data.sources(), &entry.section_anchor_address)?;
+                    validate_author(validation_data, &entry.section_anchor_address)?;
                     Ok(())
                 },
                 EntryValidationData::Modify { new_entry, old_entry, validation_data, .. } => {
                     if new_entry.section_anchor_address != old_entry.section_anchor_address {
                         return Err(String::from("Cannot change section to which this content belongs to"));
                     }
-                    validate_author(&validation_data.sources(), &new_entry.section_anchor_address)?;
+                    validate_author(validation_data, &new_entry.section_anchor_address)?;
                     Ok(())
                 },
                 EntryValidationData::Delete { old_entry, validation_data, .. } => {
-                    validate_author(&validation_data.sources(), &old_entry.section_anchor_address)?;
+                    validate_author(validation_data, &old_entry.section_anchor_address)?;
 
                     Ok(())
                 }

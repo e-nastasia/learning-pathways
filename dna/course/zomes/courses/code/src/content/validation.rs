@@ -1,19 +1,25 @@
-use crate::course::entry::Course;
-use crate::section::entry::Section;
-use hdk::error::{ZomeApiError, ZomeApiResult};
+use crate::course::handlers::get_latest_course;
+use crate::helper;
+use crate::section::handlers::get_latest_section;
+use hdk::error::ZomeApiResult;
 use hdk::holochain_persistence_api::cas::content::Address;
+use hdk::ValidationData;
 
 /////////////////////////// Validations
 pub fn validate_author(
-    signing_addresses: &Vec<Address>,
+    validation_data: ValidationData,
     section_anchor_address: &Address,
 ) -> ZomeApiResult<()> {
-    let section: Section = hdk::utils::get_as_type(section_anchor_address.clone())?;
-    let course: Course = hdk::utils::get_as_type(section.course_address.clone())?;
-    if !signing_addresses.contains(&course.teacher_address) {
-        return Err(ZomeApiError::from(String::from(
-            "Error: Only the teacher can create or modify a content for section",
-        )));
+    let latest_section_result = get_latest_section(&section_anchor_address)?;
+    if let Some((current_section, _current_section_address)) = latest_section_result {
+        let latest_course_result = get_latest_course(&current_section.course_address)?;
+        if let Some((current_course, _current_course_address)) = latest_course_result {
+            helper::validate_only_teacher_can_do(
+                &current_course.teacher_address,
+                validation_data.sources(),
+                "create a content in this section",
+            )?;
+        }
     }
     Ok(())
 }

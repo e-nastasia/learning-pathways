@@ -142,6 +142,17 @@ function getLatestSectionEntry(sectionAnchorAddress) {
     })
 };
 
+function createContent(name, sectionAnchorAddress, url, timestamp, description) {
+  return (caller) =>
+  caller.call("course_dna", "courses", "create_content", {
+    name,
+    section_anchor_address: sectionAnchorAddress,
+    url,
+    timestamp,
+    description,
+  })
+}
+
 
 
 /*******  CREATE_COURSE & GET_LATEST_COURSE_ENTRYs *********/
@@ -214,43 +225,43 @@ function getLatestSectionEntry(sectionAnchorAddress) {
 // });
 
 /** CREATE_SECTION & GET_LATEST_SECTION_ENTRY*/
-orchestrator.registerScenario("Scenario4: Create new Section for a Course", async (s, t) => {
-  const { alice, bob } = await s.players(
-    { alice: conductorConfig, bob: conductorConfig },
-    true
-  );
+// orchestrator.registerScenario("Scenario4: Create new Section for a Course", async (s, t) => {
+//   const { alice, bob } = await s.players(
+//     { alice: conductorConfig, bob: conductorConfig },
+//     true
+//   );
 
-  const course_addr = await createCourse("course for scenario 4", 123)(alice);
-  console.log(course_addr);
-  t.ok(course_addr.Ok);
+//   const course_addr = await createCourse("course for scenario 4", 123)(alice);
+//   console.log(course_addr);
+//   t.ok(course_addr.Ok);
 
-  await s.consistency();
-  // Alice can create a module for course because she is the owner
-  const new_section_addr = await createSection("section 1 for course 1", course_addr.Ok, 456)(alice);
+//   await s.consistency();
+//   // Alice can create a module for course because she is the owner
+//   const new_section_addr = await createSection("section 1 for course 1", course_addr.Ok, 456)(alice);
 
-  console.log(new_section_addr);
-  t.ok(new_section_addr.Ok);
-  await s.consistency();
+//   console.log(new_section_addr);
+//   t.ok(new_section_addr.Ok);
+//   await s.consistency();
 
-  // Bob can not create a module for course, because he is not the owner of course
-  const fail_add_module_addr = await createSection("section 1 for course 1 by bob", course_addr.Ok, 456)(bob);
+//   // Bob can not create a module for course, because he is not the owner of course
+//   const fail_add_module_addr = await createSection("section 1 for course 1 by bob", course_addr.Ok, 456)(bob);
 
-  console.log(fail_add_module_addr);
-  t.error(fail_add_module_addr.Ok);
-  await s.consistency();
+//   console.log(fail_add_module_addr);
+//   t.error(fail_add_module_addr.Ok);
+//   await s.consistency();
 
-  const sectionResult = await getLatestSectionEntry(new_section_addr.Ok)(alice);
-  console.log(sectionResult);
-  t.deepEqual(sectionResult.Ok, {
-    title: "section 1 for course 1",
-    course_address: course_addr.Ok,
-    timestamp: 456,
-    anchor_address: new_section_addr.Ok
-  });
-  await s.consistency();
-});
+//   const sectionResult = await getLatestSectionEntry(new_section_addr.Ok)(alice);
+//   console.log(sectionResult);
+//   t.deepEqual(sectionResult.Ok, {
+//     title: "section 1 for course 1",
+//     course_address: course_addr.Ok,
+//     timestamp: 456,
+//     anchor_address: new_section_addr.Ok
+//   });
+//   await s.consistency();
+// });
 
-
+/** GET_MY_COURSES */
 // orchestrator.registerScenario("Scenario5: Get All My Courses", async (s, t) => {
 //   const { alice, bob } = await s.players(
 //     { alice: conductorConfig, bob: conductorConfig },
@@ -281,42 +292,31 @@ orchestrator.registerScenario("Scenario4: Create new Section for a Course", asyn
 // });
 
 
-
-// orchestrator.registerScenario("Scenario6: Create new Content for a Module", async (s, t) => {
+/** CREATE_CONTENT */
+// orchestrator.registerScenario("Scenario6: Create new Content for a Section", async (s, t) => {
 //   const { alice, bob } = await s.players(
 //     { alice: conductorConfig, bob: conductorConfig },
 //     true
 //   );
-//   const course_addr = await alice.call(
-//     "course_dna",
-//     "courses",
-//     "create_course",
-//     {
-//       title: "course for scenario 5"
-//       , timestamp: 123
-//     }
-//   );
+
+//   const course_addr = await createCourse("course for scenario 6", 123)(alice);
 //   console.log(course_addr);
 //   t.ok(course_addr.Ok);
 
 //   await s.consistency();
-//   const module_addr = await alice.call("course_dna", "courses", "create_module", {
-//     title: "module 1 for course 1",
-//     course_address: course_addr.Ok,
-//     timestamp: 456
-//   });
+//   const section_addr = await createSection("section 1 for course 1", course_addr.Ok, 456)(alice);
 
-//   console.log(module_addr);
-//   t.ok(module_addr.Ok);
+//   console.log(section_addr);
+//   t.ok(section_addr.Ok);
 //   await s.consistency();
 
-//   const content_addr = await alice.call("course_dna", "courses", "create_content", {
-//     name: "content 1 for module 1",
-//     url: "https://youtube.com",
-//     descritpion: "Holochain Intro",
-//     module_address: module_addr.Ok,
-//     timestamp: 789
-//   });
+//   const content_addr = await createContent(
+//     "content 1 for module 1",
+//     section_addr.Ok,
+//      "https://youtube.com",
+//      789,
+//     "Holochain Intro"
+//   )(alice);
 
 //   console.log(content_addr);
 //   t.ok(content_addr.Ok);
