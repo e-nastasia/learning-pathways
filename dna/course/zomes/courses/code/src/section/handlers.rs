@@ -40,37 +40,46 @@ pub fn create(title: String, course_address: &Address, timestamp: u64) -> ZomeAp
     Ok(section_anchor_address)
 }
 
-pub fn get_latest_section(section_anchor_address: &Address) -> ZomeApiResult<(Section, Address)> {
+pub fn get_latest_section(
+    section_anchor_address: &Address,
+) -> ZomeApiResult<Option<(Section, Address)>> {
     helper::get_latest_data_entry::<Section>(section_anchor_address, &SectionAnchor::link_type())
 }
 
 pub fn update(title: String, section_anchor_address: &Address) -> ZomeApiResult<Address> {
-    let (mut previous_section, previous_section_address) =
-        get_latest_section(section_anchor_address)?;
+    let latest_section_result = get_latest_section(section_anchor_address)?;
+    match latest_section_result {
+        Some((mut previous_section, previous_section_address)) => {
+            // update the section
+            previous_section.title = title;
+            // commit this update to the DHT.
+            let new_section_address =
+                hdk::update_entry(previous_section.entry(), &previous_section_address)?;
 
-    // update the section
-    previous_section.title = title;
-    // commit this update to the DHT.
-    let new_section_address =
-        hdk::update_entry(previous_section.entry(), &previous_section_address)?;
+            // remove link to previous version of section
+            hdk::remove_link(
+                section_anchor_address,
+                &previous_section_address,
+                SectionAnchor::link_type(),
+                "".to_string(),
+            )?;
 
-    // remove link to previous version of section
-    hdk::remove_link(
-        section_anchor_address,
-        &previous_section_address,
-        SectionAnchor::link_type(),
-        "".to_string(),
-    )?;
+            // create link to new version of section
+            hdk::link_entries(
+                section_anchor_address,
+                &new_section_address,
+                SectionAnchor::link_type(),
+                "".to_string(),
+            )?;
 
-    // create link to new version of section
-    hdk::link_entries(
-        section_anchor_address,
-        &new_section_address,
-        SectionAnchor::link_type(),
-        "".to_string(),
-    )?;
-
-    Ok(new_section_address)
+            Ok(section_anchor_address.clone())
+        }
+        None => {
+            return Err(ZomeApiError::from(
+                "Can't update a deleted section".to_owned(),
+            ));
+        }
+    }
 }
 
 pub fn delete(section_anchor_address: Address) -> ZomeApiResult<Address> {

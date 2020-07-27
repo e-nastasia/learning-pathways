@@ -1,6 +1,9 @@
 use hdk::holochain_persistence_api::cas::content::Address;
 use hdk::prelude::LinkMatch;
-use hdk::{error::ZomeApiResult, AGENT_ADDRESS};
+use hdk::{
+    error::{ZomeApiError, ZomeApiResult},
+    AGENT_ADDRESS,
+};
 use holochain_entry_utils::HolochainEntry;
 
 use super::anchor::{
@@ -64,7 +67,9 @@ pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
     Ok(new_course_address)
 }
 
-pub fn get_latest_course(course_anchor_address: &Address) -> ZomeApiResult<(Course, Address)> {
+pub fn get_latest_course(
+    course_anchor_address: &Address,
+) -> ZomeApiResult<Option<(Course, Address)>> {
     helper::get_latest_data_entry::<Course>(course_anchor_address, &CourseAnchor::link_type())
 }
 
@@ -104,17 +109,29 @@ pub fn update(
     sections_addresses: Vec<Address>,
     course_anchor_address: &Address,
 ) -> ZomeApiResult<Address> {
-    let (mut previous_course, previous_course_address) = get_latest_course(course_anchor_address)?;
+    let latest_course_result = get_latest_course(course_anchor_address)?;
+    match latest_course_result {
+        Some((mut previous_course, previous_course_address)) => {
+            // update this course
+            previous_course.title = title;
+            previous_course.sections = sections_addresses;
 
-    // update this course
-    previous_course.title = title;
-    previous_course.sections = sections_addresses;
+            commit_update(
+                previous_course,
+                &previous_course_address,
+                course_anchor_address,
+            )?;
 
-    commit_update(
-        previous_course,
-        &previous_course_address,
-        course_anchor_address,
-    )
+            // returning address of the course anchor. Sure, it doesn't change, but it makes our API consistent with hdk:: API
+            // that always returns address of an updated entry
+            return Ok(course_anchor_address.clone());
+        }
+        None => {
+            return Err(ZomeApiError::from(
+                "Can't update a deleted course".to_owned(),
+            ));
+        }
+    }
 }
 
 pub fn delete(course_anchor_address: Address) -> ZomeApiResult<Address> {
@@ -192,38 +209,54 @@ pub fn add_section(
     course_anchor_address: &Address,
     section_anchor_address: &Address,
 ) -> ZomeApiResult<Address> {
-    let (mut previous_course, previous_course_address) = get_latest_course(course_anchor_address)?;
+    let latest_course_result = get_latest_course(course_anchor_address)?;
+    match latest_course_result {
+        Some((mut previous_course, previous_course_address)) => {
+            previous_course
+                .sections
+                .push(section_anchor_address.clone());
+            // we won't use this new address but we need to save method's result somewhere
+            // so this variable is prefixed with _
+            let _new_course_address = commit_update(
+                previous_course,
+                &previous_course_address,
+                course_anchor_address,
+            )?;
 
-    previous_course
-        .sections
-        .push(section_anchor_address.clone());
-    // we won't use this new address but we need to save method's result somewhere
-    // so this variable is prefixed with _
-    let _new_course_address = commit_update(
-        previous_course,
-        &previous_course_address,
-        course_anchor_address,
-    )?;
-
-    Ok(course_anchor_address.clone())
+            Ok(course_anchor_address.clone())
+        }
+        None => {
+            return Err(ZomeApiError::from(
+                "Can't add section to a deleted course".to_owned(),
+            ));
+        }
+    }
 }
 
 pub fn delete_section(
     course_anchor_address: &Address,
     section_anchor_address: &Address,
 ) -> ZomeApiResult<Address> {
-    let (mut previous_course, previous_course_address) = get_latest_course(course_anchor_address)?;
+    let latest_course_result = get_latest_course(course_anchor_address)?;
+    match latest_course_result {
+        Some((mut previous_course, previous_course_address)) => {
+            previous_course.sections.remove_item(section_anchor_address);
+            // we won't use this new address but we need to save method's result somewhere
+            // so this variable is prefixed with _
+            let _new_course_address = commit_update(
+                previous_course,
+                &previous_course_address,
+                course_anchor_address,
+            )?;
 
-    previous_course.sections.remove_item(section_anchor_address);
-    // we won't use this new address but we need to save method's result somewhere
-    // so this variable is prefixed with _
-    let _new_course_address = commit_update(
-        previous_course,
-        &previous_course_address,
-        course_anchor_address,
-    )?;
-
-    Ok(course_anchor_address.clone())
+            Ok(course_anchor_address.clone())
+        }
+        None => {
+            return Err(ZomeApiError::from(
+                "Can't delete section from a deleted course".to_owned(),
+            ));
+        }
+    }
 }
 
 // NOTE: fun fact for fellow English learners: there isn't a typo because both "enrol" and "enroll" are valid!
