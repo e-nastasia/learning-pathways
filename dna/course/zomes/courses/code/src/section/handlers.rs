@@ -8,20 +8,25 @@ use crate::course;
 use crate::course::entry::Course;
 use crate::helper;
 
-pub fn create(title: String, course_address: &Address, timestamp: u64) -> ZomeApiResult<Address> {
+pub fn create(
+    title: String,
+    course_anchor_address: &Address,
+    timestamp: u64,
+) -> ZomeApiResult<Address> {
     // retrieve course at course_address. If this address isn't valid, we'll fail here, so it serves as input validation
     // we won't be using this course instance so we prefix it with _ symbol
-    let _course: Course = hdk::utils::get_as_type(course_address.clone())?;
+    let _course: Course = hdk::utils::get_as_type(course_anchor_address.clone())?;
 
     // initialize SectionAnchor instance
-    let section_anchor = SectionAnchor::new(title.clone(), course_address.clone(), timestamp);
+    let section_anchor =
+        SectionAnchor::new(title.clone(), course_anchor_address.clone(), timestamp);
     // commit SectionAnchor to DHT
     let section_anchor_address = hdk::commit_entry(&section_anchor.entry())?;
 
     // initialize Section instance without commiting it to DHT: we'll need it to commit anchor
     let new_section = Section::new(
         title,
-        course_address.clone(),
+        course_anchor_address.clone(),
         timestamp,
         section_anchor_address.clone(),
     );
@@ -35,7 +40,7 @@ pub fn create(title: String, course_address: &Address, timestamp: u64) -> ZomeAp
         "".to_string(),
     )?;
 
-    course::handlers::add_section(&course_address, &section_anchor_address)?;
+    course::handlers::add_section(&course_anchor_address, &section_anchor_address)?;
     // SectionAnchor serves as this section's ID so we return it
     Ok(section_anchor_address)
 }

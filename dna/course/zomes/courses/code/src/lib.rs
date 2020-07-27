@@ -145,10 +145,10 @@ mod course_zome {
     #[zome_fn("hc_public")]
     fn create_section(
         title: String,
-        course_address: Address,
+        course_anchor_address: Address,
         timestamp: u64,
     ) -> ZomeApiResult<Address> {
-        section::handlers::create(title, &course_address, timestamp)
+        section::handlers::create(title, &course_anchor_address, timestamp)
     }
 
     #[zome_fn("hc_public")]
