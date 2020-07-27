@@ -5,7 +5,6 @@ use super::anchor::SectionAnchor;
 use super::entry::Section;
 use crate::anchor_trait::AnchorTrait;
 use crate::course;
-use crate::course::entry::Course;
 use crate::helper;
 
 pub fn create(

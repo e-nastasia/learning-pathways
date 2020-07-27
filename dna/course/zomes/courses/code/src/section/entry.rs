@@ -50,7 +50,7 @@ pub fn entry_def() -> ValidatingEntryType {
                 EntryValidationData::Create { entry, validation_data } => {
                     validate_section_title(&entry.title)?;
 
-                    validate_author(&validation_data.sources(), &entry)?;
+                    validate_author(validation_data, &entry)?;
 
                     Ok(())
                 },
@@ -60,11 +60,11 @@ pub fn entry_def() -> ValidatingEntryType {
                     if new_entry.course_address != old_entry.course_address {
                         return Err(String::from("Cannot change course to which the section belongs"));
                     }
-                    validate_author(&validation_data.sources(), &new_entry)?;
+                    validate_author(validation_data, &new_entry)?;
                     Ok(())
                 },
                 EntryValidationData::Delete { old_entry, validation_data, .. } => {
-                    validate_author(&validation_data.sources(), &old_entry)?;
+                    validate_author(validation_data, &old_entry)?;
 
                     Ok(())
                 }

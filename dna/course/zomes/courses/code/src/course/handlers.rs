@@ -64,7 +64,7 @@ pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
         "",
     )?;
 
-    Ok(new_course_address)
+    Ok(course_anchor_address)
 }
 
 pub fn get_latest_course(
@@ -98,7 +98,7 @@ fn commit_update(
         "".to_string(),
     )?;
 
-    Ok(new_course_address)
+    Ok(course_anchor_address.to_owned())
 }
 
 pub fn update(
