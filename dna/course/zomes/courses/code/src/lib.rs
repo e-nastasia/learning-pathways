@@ -130,6 +130,19 @@ mod course_zome {
     }
 
     #[zome_fn("hc_public")]
+    fn get_latest_section_entry(
+        section_anchor_address: Address,
+    ) -> ZomeApiResult<Option<section::entry::Section>> {
+        let latest_section_result = section::handlers::get_latest_section(&section_anchor_address)?;
+        match latest_section_result {
+            Some((section_entry, _section_entry_address)) => {
+                return Ok(Some(section_entry));
+            }
+            None => return Ok(None),
+        }
+    }
+
+    #[zome_fn("hc_public")]
     fn create_section(
         title: String,
         course_address: Address,
