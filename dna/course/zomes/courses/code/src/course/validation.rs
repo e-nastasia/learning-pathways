@@ -1,4 +1,4 @@
-use super::entry::Course;
+use super::entry::{Course, MAX_TITLE_LEN};
 use crate::helper;
 use hdk::holochain_core_types::chain_header::ChainHeader;
 use hdk::{LinkValidationData, ValidationData};
@@ -10,7 +10,7 @@ pub fn create(entry: Course, validation_data: ValidationData) -> Result<(), Stri
         validation_data.sources(),
         "create their courses",
     )?;
-    helper::validate_entity_title(&entry.title, &Course::entry_type(), 50)
+    helper::validate_entity_title(&entry.title, &Course::entry_type(), MAX_TITLE_LEN)
 }
 
 pub fn modify(
@@ -22,9 +22,9 @@ pub fn modify(
     helper::validate_only_teacher_can_do(
         &new_entry.teacher_address,
         validation_data.sources(),
-        "create their courses",
+        "modify their courses",
     )?;
-    helper::validate_entity_title(&new_entry.title, "course", 50)?;
+    helper::validate_entity_title(&new_entry.title, &Course::entry_type(), MAX_TITLE_LEN)?;
     validate_no_teacher_change(old_entry, new_entry)
 }
 

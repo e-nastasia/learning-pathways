@@ -8,6 +8,8 @@ use holochain_entry_utils::HolochainEntry;
 
 use super::validation;
 
+pub const MAX_TITLE_LEN: usize = 50;
+
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Course {
     pub title: String,
