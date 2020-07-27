@@ -12,36 +12,45 @@ pub fn create(
     course_anchor_address: &Address,
     timestamp: u64,
 ) -> ZomeApiResult<Address> {
-    // retrieve course at course_address. If this address isn't valid, we'll fail here, so it serves as input validation
-    // we won't be using this course instance so we prefix it with _ symbol
-    let _course: Course = hdk::utils::get_as_type(course_anchor_address.clone())?;
+    // retrieve latest course at course_address. If this address isn't valid or the course entry is deleted,
+    // this returns None. We run a match to make sure the course exist and return error if it doesn't.
+    let latest_course_result = course::handlers::get_latest_course(course_anchor_address)?;
 
-    // initialize SectionAnchor instance
-    let section_anchor =
-        SectionAnchor::new(title.clone(), course_anchor_address.clone(), timestamp);
-    // commit SectionAnchor to DHT
-    let section_anchor_address = hdk::commit_entry(&section_anchor.entry())?;
+    match latest_course_result {
+        Some((_revious_course, _previous_course_address)) => {
+            // initialize SectionAnchor instance
+            let section_anchor =
+                SectionAnchor::new(title.clone(), course_anchor_address.clone(), timestamp);
+            // commit SectionAnchor to DHT
+            let section_anchor_address = hdk::commit_entry(&section_anchor.entry())?;
 
-    // initialize Section instance without commiting it to DHT: we'll need it to commit anchor
-    let new_section = Section::new(
-        title,
-        course_anchor_address.clone(),
-        timestamp,
-        section_anchor_address.clone(),
-    );
-    // commit Section to DHT
-    let new_section_address = hdk::commit_entry(&new_section.entry())?;
+            // initialize Section instance without commiting it to DHT: we'll need it to commit anchor
+            let new_section = Section::new(
+                title,
+                course_anchor_address.clone(),
+                timestamp,
+                section_anchor_address.clone(),
+            );
+            // commit Section to DHT
+            let new_section_address = hdk::commit_entry(&new_section.entry())?;
 
-    hdk::link_entries(
-        &section_anchor_address,
-        &new_section_address,
-        SectionAnchor::link_type(),
-        "".to_string(),
-    )?;
+            hdk::link_entries(
+                &section_anchor_address,
+                &new_section_address,
+                SectionAnchor::link_type(),
+                "".to_string(),
+            )?;
 
-    course::handlers::add_section(&course_anchor_address, &section_anchor_address)?;
-    // SectionAnchor serves as this section's ID so we return it
-    Ok(section_anchor_address)
+            // course::handlers::add_section(&course_address, &section_anchor_address)?;
+            // SectionAnchor serves as this section's ID so we return it
+            Ok(section_anchor_address)
+        }
+        None => {
+            return Err(ZomeApiError::from(
+                "Can't create a section in deleted course".to_owned(),
+            ));
+        }
+    }
 }
 
 pub fn get_latest_section(

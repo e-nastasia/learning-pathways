@@ -121,6 +121,11 @@ function deleteCourse(courseAnchorAddress) {
     })
 };
 
+function getMyCourses() {
+  return (caller) =>
+    caller.call("course_dna", "courses", "get_my_courses", {})
+};
+
 function createSection(title, courseAnchorAddress, timestamp) {
   return (caller) =>
   caller.call("course_dna", "courses", "create_section", {
@@ -251,42 +256,24 @@ orchestrator.registerScenario("Scenario4: Create new Section for a Course", asyn
 //     { alice: conductorConfig, bob: conductorConfig },
 //     true
 //   );
-//   const course_addr_1 = await alice.call(
-//     "course_dna",
-//     "courses",
-//     "create_course",
-//     {
-//       title: "course for scenario 5-1",
-//       timestamp: 123
-//     }
-//   );
+//   const course_addr_1 = await createCourse("course for scenario 5-1", 123)(alice);
 //   console.log(course_addr_1);
 //   t.ok(course_addr_1.Ok);
 
 //   await s.consistency();
 
-//   const course_addr_2 = await alice.call(
-//     "course_dna",
-//     "courses",
-//     "create_course",
-//     {
-//       title: "course for scenario 5-2",
-//       timestamp: 1234
-//     }
-//   );
+//   const course_addr_2 = await createCourse("course for scenario 5-2", 1234)(alice);
 //   console.log(course_addr_2);
 //   t.ok(course_addr_2.Ok);
 
 //   await s.consistency();
 
 
-//   const all_courses_alice = await alice.call("course_dna", "courses", "get_my_courses", {
-//   });
+//   const all_courses_alice = await getMyCourses()(alice);
 //   t.true(all_courses_alice.Ok[0] != null);
 //   t.true(all_courses_alice.Ok[1] != null);
 
-//   const all_courses_bob = await bob.call("course_dna", "courses", "get_my_courses", {
-//   });
+//   const all_courses_bob = await getMyCourses()(bob);
 //   t.true(all_courses_bob.Ok[0] == null);
 
 //   await s.consistency();
