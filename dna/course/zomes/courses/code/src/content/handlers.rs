@@ -1,9 +1,11 @@
 use hdk::error::ZomeApiResult;
 use hdk::holochain_persistence_api::cas::content::Address;
 use hdk::prelude::LinkMatch;
+use hdk::prelude::*;
 use holochain_entry_utils::HolochainEntry;
 
 use super::entry::Content;
+use crate::section;
 use crate::section::anchor::SECTION_TO_CONTENT_LINK;
 
 pub fn create(
@@ -13,22 +15,32 @@ pub fn create(
     timestamp: u64,
     description: String,
 ) -> ZomeApiResult<Address> {
-    let new_content = Content::new(
-        name,
-        section_anchor_address.clone(),
-        url,
-        timestamp,
-        description,
-    );
-    let new_content_address = hdk::commit_entry(&new_content.entry())?;
-    hdk::link_entries(
-        &section_anchor_address,
-        &new_content_address,
-        SECTION_TO_CONTENT_LINK,
-        "",
-    )?;
+    let latest_section_result = section::handlers::get_latest_section(&section_anchor_address)?;
+    match latest_section_result {
+        Some((_current_section, _current_section_address)) => {
+            let new_content = Content::new(
+                name,
+                section_anchor_address.clone(),
+                url,
+                timestamp,
+                description,
+            );
+            let new_content_address = hdk::commit_entry(&new_content.entry())?;
+            hdk::link_entries(
+                &section_anchor_address,
+                &new_content_address,
+                SECTION_TO_CONTENT_LINK,
+                "",
+            )?;
 
-    Ok(new_content_address)
+            Ok(new_content_address)
+        }
+        None => {
+            return Err(ZomeApiError::from(
+                "Can't create a content in deleted section".to_owned(),
+            ));
+        }
+    }
 }
 
 pub fn get_contents(section_anchor_address: &Address) -> ZomeApiResult<Vec<Address>> {
