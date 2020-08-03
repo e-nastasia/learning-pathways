@@ -1,21 +1,21 @@
 import gql from 'graphql-tag';
 
 export const typeDefs = gql`
-  directive @loadEntry on FIELD_DEFINITION
+  directive @loadEntry(entryType: String) on FIELD_DEFINITION
 
   type Course {
     id: ID!
     title: String!
-    modules: [Module!]! @loadEntry
+    sections: [Section!]! @loadEntry(entryType: "section")
     teacher_address: ID!
     students: [ID!]!
   }
 
-  type Module {
+  type Section {
     id: ID!
-    course_address: Course! @loadEntry
+    course_address: Course! @loadEntry(entryType: "course")
     title: String!
-    contents: [Content!]! @loadEntry
+    contents: [Content!]! @loadEntry(entryType: "content")
   }
 
   type Content {
@@ -26,8 +26,8 @@ export const typeDefs = gql`
   }
 
   type Query {
-    courses(filter: String!): [Course!]! @loadEntry
-    course(courseId: ID!): Course! @loadEntry
+    courses(filter: String!): [Course!]! @loadEntry(entryType: "course")
+    course(courseId: ID!): Course! @loadEntry(entryType: "course")
     myAddress: ID!
   }
 
@@ -38,18 +38,18 @@ export const typeDefs = gql`
   }
 
   type Mutation {
-    createCourse(title: String!): Course! @loadEntry
-    updateCourse(courseId: ID!, title: String!, modulesIds: [ID!]!): Course!
-      @loadEntry
+    createCourse(title: String!): Course! @loadEntry(entryType: "course")
+    updateCourse(courseId: ID!, title: String!, sectionsIds: [ID!]!): Course!
+      @loadEntry(entryType: "course")
     deleteCourse(courseId: ID!): Query
-    createModule(courseId: ID!, title: String!): Course! @loadEntry
-    updateModule(courseId: ID!, moduleId: ID!, title: String!): Course!
-      @loadEntry
-    deleteModule(courseId: ID!, moduleId: ID!): Course! @loadEntry
-    createContent(courseId: ID!, moduleId: ID!, content: ContentInput!): Course! @loadEntry
-    updateContent(courseId: ID!, contentId: ID!, content: ContentInput!): Course! @loadEntry
-    deleteContent(courseId: ID!, contentId: ID!): Course! @loadEntry
-    enrolInCourse(courseId: ID!): Course! @loadEntry
+    createSection(courseId: ID!, title: String!): Course! @loadEntry(entryType: "course")
+    updateSection(courseId: ID!, sectionId: ID!, title: String!): Course!
+      @loadEntry(entryType: "course")
+    deleteSection(courseId: ID!, sectionId: ID!): Course! @loadEntry(entryType: "course")
+    createContent(courseId: ID!, sectionId: ID!, content: ContentInput!): Course! @loadEntry(entryType: "course")
+    updateContent(courseId: ID!, contentId: ID!, content: ContentInput!): Course! @loadEntry(entryType: "course")
+    deleteContent(courseId: ID!, contentId: ID!): Course! @loadEntry(entryType: "course")
+    enrolInCourse(courseId: ID!): Course! @loadEntry(entryType: "course")
   }
 `;
 

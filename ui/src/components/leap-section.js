@@ -12,17 +12,17 @@ import '@material/mwc-icon-button';
 import { sharedStyles } from '../shared-styles';
 import { getClient } from '../graphql';
 import {
-  UPDATE_MODULE,
-  DELETE_MODULE,
+  UPDATE_SECTION,
+  DELETE_SECTION,
   CREATE_CONTENT,
   DELETE_CONTENT,
   UPDATE_CONTENT
 } from '../graphql/queries';
 
-export class LeapModule extends LitElement {
+export class LeapSection extends LitElement {
   static get properties() {
     return {
-      module: {
+      section: {
         type: Object
       },
       editable: {
@@ -83,7 +83,7 @@ export class LeapModule extends LitElement {
         mutation: CREATE_CONTENT,
         variables: {
           courseId: this.courseId,
-          moduleId: this.module.id,
+          sectionId: this.section.id,
           content: {
             name: this.editingContent.name,
             description: this.editingContent.description,
@@ -96,29 +96,29 @@ export class LeapModule extends LitElement {
     this.dispatchEvent(new CustomEvent('course-updated', { composed: true }));
   }
 
-  async updateModule() {
+  async updateSection() {
     this.editingTitle = false;
 
     const client = await getClient();
     await client.mutate({
-      mutation: UPDATE_MODULE,
+      mutation: UPDATE_SECTION,
       variables: {
         courseId: this.courseId,
-        moduleId: this.module.id,
-        title: this.renameModule
+        sectionId: this.section.id,
+        title: this.renameSection
       }
     });
 
     this.dispatchEvent(new CustomEvent('course-updated', { composed: true }));
   }
 
-  async deleteModule() {
+  async deleteSection() {
     const client = await getClient();
     await client.mutate({
-      mutation: DELETE_MODULE,
+      mutation: DELETE_SECTION,
       variables: {
         courseId: this.courseId,
-        moduleId: this.module.id
+        sectionId: this.section.id
       }
     });
 
@@ -221,12 +221,12 @@ export class LeapModule extends LitElement {
           ? html`
               <mwc-textfield
                 outlined
-                @input=${e => (this.renameModule = e.target.value)}
-                .value=${this.module.title}
+                @input=${e => (this.renameSection = e.target.value)}
+                .value=${this.section.title}
               ></mwc-textfield>
             `
           : html`
-              <span class="title"> ${this.module.title}</span>
+              <span class="title"> ${this.section.title}</span>
             `}
       </div>
     `;
@@ -242,7 +242,7 @@ export class LeapModule extends LitElement {
             class="action"
             label="Save"
             icon="done"
-            @click=${() => this.updateModule()}
+            @click=${() => this.updateSection()}
           ></mwc-icon-button>
           <mwc-icon-button
             class="action"
@@ -272,8 +272,8 @@ export class LeapModule extends LitElement {
           slot="action-buttons"
           class="action"
           icon="delete"
-          label="Delete module"
-          @click=${() => this.deleteModule()}
+          label="Delete section"
+          @click=${() => this.deleteSection()}
         ></mwc-icon-button>
       </div>
     `;
@@ -304,7 +304,7 @@ export class LeapModule extends LitElement {
             `
           : html``}
       </mwc-list-item>
-      ${index !== this.module.contents.length - 1
+      ${index !== this.section.contents.length - 1
         ? html`
             <li divider padded role="separator"></li>
           `
@@ -319,15 +319,15 @@ export class LeapModule extends LitElement {
       <mwc-card class="fill">
         <div style="padding: 16px;" class="column">
           ${this.renderHeader()}
-          ${this.module.contents.length === 0
+          ${this.section.contents.length === 0
             ? html`
                 <leap-empty-placeholder
-                  message="There are no contents in this module"
+                  message="There are no contents in this section"
                 ></leap-empty-placeholder>
               `
             : html`
                 <mwc-list style="padding-top: 8px; padding-bottom: 8px;">
-                  ${this.module.contents.map((content, index) =>
+                  ${this.section.contents.map((content, index) =>
                     this.renderContent(content, index)
                   )}
                 </mwc-list>

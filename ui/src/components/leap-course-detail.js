@@ -9,7 +9,7 @@ import { router } from '../router';
 import { getClient } from '../graphql';
 import {
   GET_COURSE_INFO,
-  CREATE_MODULE,
+  CREATE_SECTION,
   ENROL_IN_COURSE,
   DELETE_COURSE
 } from '../graphql/queries';
@@ -68,14 +68,14 @@ export class LeapCourseDetail extends LitElement {
     }
   }
 
-  async createModule() {
+  async createSection() {
     const client = await getClient();
 
     const result = await client.mutate({
-      mutation: CREATE_MODULE,
+      mutation: CREATE_SECTION,
       variables: {
         courseId: this.courseId,
-        title: this.moduleTitle
+        title: this.sectionTitle
       },
       refetchQueries: [
         {
@@ -90,22 +90,22 @@ export class LeapCourseDetail extends LitElement {
     this.loadCourse();
   }
 
-  renderCreateModuleDialog() {
+  renderCreateSectionDialog() {
     return html`
-      <mwc-dialog id="create-module-dialog" heading="Create module">
+      <mwc-dialog id="create-section-dialog" heading="Create section">
         <mwc-textfield
           style="margin-top: 16px;"
           outlined
           label="Title"
           dialogInitialFocus
-          @input=${e => (this.moduleTitle = e.target.value)}
+          @input=${e => (this.sectionTitle = e.target.value)}
         >
         </mwc-textfield>
 
         <mwc-button
           slot="primaryAction"
           dialogAction="create"
-          @click=${() => this.createModule()}
+          @click=${() => this.createSection()}
         >
           Create
         </mwc-button>
@@ -116,25 +116,25 @@ export class LeapCourseDetail extends LitElement {
     `;
   }
 
-  renderModules() {
-    if (this.course.modules.length === 0)
+  renderSections() {
+    if (this.course.sections.length === 0)
       return html`
         <leap-empty-placeholder
-          message="There are no modules in this course"
+          message="There are no sections in this course"
         ></leap-empty-placeholder>
       `;
 
     return html`
       <div class="column">
-        ${this.course.modules.map(
-          module =>
+        ${this.course.sections.map(
+          section =>
             html`
-              <leap-module
+              <leap-section
                 .courseId=${this.courseId}
-                .module=${module}
+                .section=${section}
                 .editable=${this.userIsTeacher()}
                 style="padding-bottom: 24px;"
-              ></leap-module>
+              ></leap-section>
             `
         )}
       </div>
@@ -187,12 +187,12 @@ export class LeapCourseDetail extends LitElement {
                 <div class="column">
                   <mwc-button
                     icon="add"
-                    label="Add module"
+                    label="Add Section"
                     raised
                     style="padding-bottom: 8px;"
                     @click=${() =>
                       (this.shadowRoot.getElementById(
-                        'create-module-dialog'
+                        'create-section-dialog'
                       ).open = true)}
                   ></mwc-button>
 
@@ -248,7 +248,7 @@ export class LeapCourseDetail extends LitElement {
       `;
 
     return html`
-      ${this.renderCreateModuleDialog()}
+      ${this.renderCreateSectionDialog()}
 
       <div class="column">
         <mwc-top-app-bar>
@@ -268,8 +268,8 @@ export class LeapCourseDetail extends LitElement {
 
           <div class="row">
             <div class="column" style="flex: 3; padding-right: 24px;">
-              <h3>Modules</h3>
-              ${this.renderModules()}
+              <h3>Sections</h3>
+              ${this.renderSections()}
             </div>
 
             <div class="column" style="flex: 1;">

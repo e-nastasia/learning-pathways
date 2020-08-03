@@ -32,20 +32,20 @@ export const resolvers = {
         ZOME_NAME,
         'get_all_students'
       )({
-        course_address: parent.id
+        course_anchor_address: parent.id
       });
 
       return parseResponse(result);
     }
   },
-  Module: {
+  Section: {
     async contents(parent, _, { callZome }) {
       const result = await callZome(
         INSTANCE_NAME,
         ZOME_NAME,
         'get_contents'
       )({
-        module_address: parent.id
+        section_anchor_address: parent.id
       });
 
       return parseResponse(result);
@@ -58,21 +58,21 @@ export const resolvers = {
         ZOME_NAME,
         'create_course'
       )({
-        timestamp: getTimestamp(),
-        title
+        title,
+        timestamp: getTimestamp()
       });
 
       return parseResponse(result);
     },
-    async updateCourse(_, { title, courseId, modulesAddresses }, { callZome }) {
+    async updateCourse(_, { title, courseId, sectionsAddresses }, { callZome }) {
       const result = await callZome(
         INSTANCE_NAME,
         ZOME_NAME,
         'update_course'
       )({
         title,
-        course_address: courseId,
-        modules_addresses: modulesAddresses
+        course_anchor_address: courseId,
+        sections_addresses: sectionsAddresses
       });
 
       return parseResponse(result);
@@ -83,19 +83,19 @@ export const resolvers = {
         ZOME_NAME,
         'delete_course'
       )({
-        course_address: courseId
+        course_anchor_address: courseId
       });
 
       return parseResponse(result);
     },
-    async createModule(_, { courseId, title }, { callZome }) {
+    async createSection(_, { courseId, title }, { callZome }) {
       const result = await callZome(
         INSTANCE_NAME,
         ZOME_NAME,
-        'create_module'
+        'create_section'
       )({
         timestamp: getTimestamp(),
-        course_address: courseId,
+        course_anchor_address: courseId,
         title
       });
 
@@ -103,13 +103,13 @@ export const resolvers = {
         setTimeout(() => resolve(courseId), 300);
       });
     },
-    async updateModule(_, { courseId, moduleId, title }, { callZome }) {
+    async updateSection(_, { courseId, sectionId, title }, { callZome }) {
       const result = await callZome(
         INSTANCE_NAME,
         ZOME_NAME,
-        'update_module'
+        'update_section'
       )({
-        module_address: moduleId,
+        section_anchor_address: sectionId,
         title
       });
 
@@ -117,20 +117,20 @@ export const resolvers = {
         setTimeout(() => resolve(courseId), 300);
       });
     },
-    async deleteModule(_, { courseId, moduleId }, { callZome }) {
+    async deleteSection(_, { courseId, sectionId }, { callZome }) {
       const result = await callZome(
         INSTANCE_NAME,
         ZOME_NAME,
-        'delete_module'
+        'delete_section'
       )({
-        module_address: moduleId
+        section_anchor_address: sectionId
       });
 
       return new Promise(resolve => {
         setTimeout(() => resolve(courseId), 300);
       });
     },
-    async createContent(_, { courseId, content, moduleId }, { callZome }) {
+    async createContent(_, { courseId, content, sectionId }, { callZome }) {
       const result = await callZome(
         INSTANCE_NAME,
         ZOME_NAME,
@@ -138,7 +138,7 @@ export const resolvers = {
       )({
         timestamp: getTimestamp(),
         name: content.name,
-        module_address: moduleId,
+        section_anchor_address: sectionId,
         url: content.url,
         description: content.description
       });
@@ -182,7 +182,7 @@ export const resolvers = {
         ZOME_NAME,
         'enrol_in_course'
       )({
-        course_address: courseId
+        course_anchor_address: courseId
       });
 
       parseResponse(result);

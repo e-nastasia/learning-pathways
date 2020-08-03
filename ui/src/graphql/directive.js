@@ -1,10 +1,11 @@
 import { SchemaDirectiveVisitor } from 'graphql-tools';
 
 import { INSTANCE_NAME, ZOME_NAME } from '../config';
-import { parseEntry } from '../utils';
+import { parseEntry, parseResponse } from '../utils';
 
 export class LoadEntityDirective extends SchemaDirectiveVisitor {
-  visitFieldDefinition(field, detail) {
+  visitFieldDefinition(field) {
+    const { entryType } = this.args;
     let defaultResolver = field.resolve;
 
     field.resolve = async (parent, args, context, info) => {
@@ -21,22 +22,37 @@ export class LoadEntityDirective extends SchemaDirectiveVisitor {
       if (!entityId) return null;
 
       if (typeof entityId === 'string')
-        return this.loadEntry(entityId, context.callZome);
-      else return entityId.map(id => this.loadEntry(id, context.callZome));
+        return this.loadEntry(entityId, context.callZome, entryType);
+      else return entityId.map(id => this.loadEntry(id, context.callZome, entryType));
     };
   }
 
-  async loadEntry(entityId, callZome) {
+  async loadEntry(entityId, callZome, entryType) {
+
+    const zomeFn =
+      entryType === "course"
+      ? "get_latest_course_entry"
+      : entryType === "section"
+      ? "get_latest_section_entry"
+      : "get_entry";
+
+    const zomeArgs = 
+      entryType === "course"
+      ? {course_anchor_address : entityId}
+      : entryType === "section"
+      ? {section_anchor_address: entityId}
+      : {address: entityId};
 
     const entryResult = await callZome(
       INSTANCE_NAME,
       ZOME_NAME,
-      'get_entry'
-    )({
-      address: entityId
-    });
+      zomeFn,
+    )(zomeArgs);
 
-    const entry = parseEntry(entryResult);
+    const entry =
+    entryType === "course" || entryType === "section"  ? 
+    parseResponse(entryResult)
+    : parseEntry(entryResult);
 
     return { id: entityId, ...entry };
   }

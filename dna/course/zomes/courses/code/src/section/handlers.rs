@@ -17,7 +17,7 @@ pub fn create(
     let latest_course_result = course::handlers::get_latest_course(course_anchor_address)?;
 
     match latest_course_result {
-        Some((_revious_course, _previous_course_address)) => {
+        Some((_previous_course, _previous_course_address)) => {
             // initialize SectionAnchor instance
             let section_anchor =
                 SectionAnchor::new(title.clone(), course_anchor_address.clone(), timestamp);
@@ -41,7 +41,7 @@ pub fn create(
                 "".to_string(),
             )?;
 
-            // course::handlers::add_section(&course_address, &section_anchor_address)?;
+            course::handlers::add_section(&course_anchor_address, &section_anchor_address)?;
             // SectionAnchor serves as this section's ID so we return it
             Ok(section_anchor_address)
         }

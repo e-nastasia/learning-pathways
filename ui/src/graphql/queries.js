@@ -19,7 +19,7 @@ export const GET_COURSE_INFO = gql`
       title
       students
       teacher_address
-      modules {
+      sections {
         id
         title
         contents {
@@ -56,14 +56,14 @@ export const DELETE_COURSE = gql`
   }
 `;
 
-export const DELETE_MODULE = gql`
-  mutation DeleteModule($courseId: ID!, $moduleId: ID!) {
-    deleteModule(courseId: $courseId, moduleId: $moduleId) {
+export const DELET_SECTION = gql`
+  mutation DeleteSection($courseId: ID!, $sectionId: ID!) {
+    deleteSection(courseId: $courseId, sectionId: $sectionId) {
       id
       title
       students
       teacher_address
-      modules {
+      sections {
         id
         title
         contents {
@@ -84,7 +84,7 @@ export const DELETE_CONTENT = gql`
       title
       students
       teacher_address
-      modules {
+      sections {
         id
         title
         contents {
@@ -104,12 +104,12 @@ export const UPDATE_CONTENT = gql`
     $contentId: ID
     $content: ContentInput!
   ) {
-    updateContent(contentId: $contentId, content: $content) {
+    updateContent(courseId: $courseId, contentId: $contentId, content: $content) {
       id
       title
       students
       teacher_address
-      modules {
+      sections {
         id
         title
         contents {
@@ -123,14 +123,14 @@ export const UPDATE_CONTENT = gql`
   }
 `;
 
-export const CREATE_MODULE = gql`
-  mutation CreateModule($courseId: ID!, $title: String!) {
-    createModule(courseId: $courseId, title: $title) {
+export const CREATE_SECTION = gql`
+  mutation CreateSection($courseId: ID!, $title: String!) {
+    createSection(courseId: $courseId, title: $title) {
       id
       title
       students
       teacher_address
-      modules {
+      sections {
         id
         title
         contents {
@@ -144,14 +144,14 @@ export const CREATE_MODULE = gql`
   }
 `;
 
-export const UPDATE_MODULE = gql`
-  mutation UpdateModule($courseId: ID!, $moduleId: ID!, $title: String!) {
-    updateModule(courseId: $courseId, moduleId: $moduleId, title: $title) {
+export const UPDATE_SECTION = gql`
+  mutation UpdateSection($courseId: ID!, $sectionId: ID!, $title: String!) {
+    updateSection(courseId: $courseId, sectionId: $sectionId, title: $title) {
       id
       title
       students
       teacher_address
-      modules {
+      sections {
         id
         title
         contents {
@@ -168,15 +168,15 @@ export const UPDATE_MODULE = gql`
 export const CREATE_CONTENT = gql`
   mutation CreateContent(
     $courseId: ID!
-    $moduleId: ID!
+    $sectionId: ID!
     $content: ContentInput!
   ) {
-    createContent(courseId: $courseId, moduleId: $moduleId, content: $content) {
+    createContent(courseId: $courseId, sectionId: $sectionId, content: $content) {
       id
       title
       students
       teacher_address
-      modules {
+      sections {
         id
         title
         contents {
