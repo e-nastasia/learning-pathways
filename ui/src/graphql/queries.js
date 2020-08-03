@@ -56,7 +56,7 @@ export const DELETE_COURSE = gql`
   }
 `;
 
-export const DELET_SECTION = gql`
+export const DELETE_SECTION = gql`
   mutation DeleteSection($courseId: ID!, $sectionId: ID!) {
     deleteSection(courseId: $courseId, sectionId: $sectionId) {
       id
