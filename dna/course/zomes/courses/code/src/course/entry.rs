@@ -46,7 +46,7 @@ impl Course {
 // Holochain entry definition for Course
 pub fn course_entry_def() -> ValidatingEntryType {
     entry!(
-        name: "course",
+        name: Course::entry_type(),
         description: "this is the definition of course",
         sharing: Sharing::Public,
         validation_package: || {
