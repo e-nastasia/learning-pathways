@@ -13,7 +13,7 @@ use super::anchor::{
 use super::catalog_anchor::CourseCatalogAnchor;
 use super::entry::Course;
 use crate::anchor_trait::AnchorTrait;
-use crate::helper;
+//use crate::helper;
 
 pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
     // if catalog anchor already exists, this function would just return it's address without actually writing anything
@@ -67,10 +67,36 @@ pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
     Ok(course_anchor_address)
 }
 
-pub fn get_latest_course(
+/*pub fn get_latest_course(
     course_anchor_address: &Address,
 ) -> ZomeApiResult<Option<(Course, Address)>> {
     helper::get_latest_data_entry::<Course>(course_anchor_address, &CourseAnchor::link_type())
+}*/
+
+pub fn get_latest_course(
+    course_anchor_address: &Address,
+) -> ZomeApiResult<Option<(Course, Address)>> {
+    // validate that anchor exists
+    let _course_anchor: CourseAnchor = hdk::utils::get_as_type(course_anchor_address.clone())?;
+
+    let course_addresses = hdk::get_links(
+        course_anchor_address,
+        LinkMatch::Exactly(&CourseAnchor::link_type()),
+        LinkMatch::Any,
+    )?
+    .addresses();
+
+    if course_addresses.len() != 1 {
+        return Err(ZomeApiError::from(
+            "Something is wrong with links from CourseAnchor to Course".to_owned(),
+        ));
+    } else {
+        let latest_course_address = course_addresses[0].clone();
+        let latest_course: Course = hdk::utils::get_as_type(latest_course_address.clone())?;
+        // our return value is a Result container on the outside that holds Option container that holds a tuple
+        // we write Ok() to init Result's value, Some to init Option's value and then inside we have our tuple
+        return Ok(Some((latest_course, latest_course_address)));
+    }
 }
 
 // NOTE: this function isn't public because it's only needed in the current module
