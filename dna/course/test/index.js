@@ -2,6 +2,8 @@
 /// See the tryorama README [https://github.com/holochain/tryorama]
 /// for a potentially more accurate example
 
+// for less verbose test TRYORAMA_LOG_LEVEL=error hc test
+
 
 const path = require("path");
 
@@ -524,15 +526,15 @@ orchestrator.registerScenario(
 
     await s.consistency();
 
-    const delete_section = await deleteSection(section_addr.Ok)(alice)
-    console.log(delete_section);
-    t.ok(delete_section.Ok);
-    await s.consistency();
+    // const delete_section = await deleteSection(section_addr.Ok)(alice)
+    // console.log(delete_section);
+    // t.ok(delete_section.Ok);
+    // await s.consistency();
   }
 );
 
 /********** ENROL_IN_COURSE & GET_ALL_STUDENTS & GET_MY_ENROLLED_COURSES **********/
-orchestrator.registerScenario("Scenario10: Create new course and get latest", async (s, t) => {
+orchestrator.registerScenario("Scenario10: Create new course and enrol", async (s, t) => {
   const { alice, bob } = await s.players(
     { alice: conductorConfig, bob: conductorConfig },
     true
@@ -545,16 +547,19 @@ orchestrator.registerScenario("Scenario10: Create new course and get latest", as
 
   const enrolled_addr = await enrolInCourse(course_addr.Ok)(bob);
   console.log("enrolled");
+  console.log(enrolled_addr);
   t.ok(enrolled_addr.Ok);
 
   await s.consistency();
 
   const all_enrolled_courses = await getMyEnrolledCourse()(bob);
   console.log("my_enrolled_courses");
+  console.log(all_enrolled_courses);
   t.true(all_enrolled_courses.Ok[0] != null);
 
   const all_students = await getAllStudents(course_addr.Ok)(alice);
   console.log("all_students");
+  console.log(all_students);
   t.true(all_students.Ok[0] != null);
 
 
