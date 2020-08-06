@@ -20,6 +20,13 @@ If using other editor, open `dna/course/zomes/courses/code` for Rust zome code a
 ### Running the tests or package the DNA
 To be able to run the tests and package the DNA
 
+**NOTE**: do not forget to start `sim2h_server` in another tab before running `hc test`! This is very important because tests wouldn't give you any warnings or errors about missing networking -- they will just fail weirdly. To do that:
+
+1. Run `nix-shell` from the root directory
+2. Run `sim2h_server`. It will just block your terminal not printing anything -- it is completely normal
+
+To run the tests:
+
 1. From the root directory, run `nix-shell`
 2. Navigate to the `dna/course` folder
 3. Run the `hc test` command OR Run the `hc package` command
