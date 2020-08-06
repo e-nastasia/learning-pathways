@@ -38,7 +38,7 @@ pub fn create(
                 &section_anchor_address,
                 &new_section_address,
                 SectionAnchor::link_type(),
-                "".to_string(),
+                "".to_owned(),
             )?;
 
             course::handlers::add_section(&course_anchor_address, &section_anchor_address)?;
@@ -74,7 +74,7 @@ pub fn update(title: String, section_anchor_address: &Address) -> ZomeApiResult<
                 section_anchor_address,
                 &previous_section_address,
                 SectionAnchor::link_type(),
-                "".to_string(),
+                "".to_owned(),
             )?;
 
             // create link to new version of section
@@ -82,7 +82,7 @@ pub fn update(title: String, section_anchor_address: &Address) -> ZomeApiResult<
                 section_anchor_address,
                 &new_section_address,
                 SectionAnchor::link_type(),
-                "".to_string(),
+                "".to_owned(),
             )?;
 
             Ok(section_anchor_address.clone())

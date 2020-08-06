@@ -32,7 +32,7 @@ pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
     let new_course = Course::new(
         title,
         Vec::default(), // section vector is empty by default
-        teacher_address.to_string().into(),
+        teacher_address.to_owned().into(),
         timestamp,
         course_anchor_address.clone(),
     );
@@ -44,7 +44,7 @@ pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
         &course_anchor_address,
         &new_course_address,
         CourseAnchor::link_type(),
-        "".to_string(),
+        "".to_owned(),
     )?;
 
     // link CourseCatalogAnchor to CourseAnchor entry for this course to be findable
@@ -52,7 +52,7 @@ pub fn create(title: String, timestamp: u64) -> ZomeApiResult<Address> {
         &catalog_anchor_address,
         &course_anchor_address,
         CourseCatalogAnchor::link_type(),
-        "".to_string(),
+        "".to_owned(),
     )?;
 
     // link address of the agent who called course::create to CourseAnchor
@@ -87,7 +87,7 @@ fn commit_update(
         course_anchor_address,
         &previous_course_address,
         CourseAnchor::link_type(),
-        "".to_string(),
+        "".to_owned(),
     )?;
 
     // create link to new version of course
@@ -95,7 +95,7 @@ fn commit_update(
         course_anchor_address,
         &new_course_address,
         CourseAnchor::link_type(),
-        "".to_string(),
+        "".to_owned(),
     )?;
 
     Ok(course_anchor_address.to_owned())
@@ -143,7 +143,7 @@ pub fn delete(course_anchor_address: Address) -> ZomeApiResult<Address> {
         &CourseCatalogAnchor::new().address()?,
         &course_anchor_address,
         CourseCatalogAnchor::link_type(),
-        "".to_string(),
+        "".to_owned(),
     )?;
 
     // retrieve list of students that have enrolled in this course
