@@ -97,17 +97,30 @@ pub fn update(title: String, section_anchor_address: &Address) -> ZomeApiResult<
 
 pub fn delete(section_anchor_address: Address) -> ZomeApiResult<Address> {
     let section_anchor: SectionAnchor = hdk::utils::get_as_type(section_anchor_address.clone())?;
+    hdk::debug(format!(
+        "tatsuya: section_anchor {:?}",
+        section_anchor.course_address.clone()
+    ))?;
 
     // NOTE: we're using the fact that anchor contains course_address and that we don't allow
     //  to change course_address in a section entry.
     // By doing so, we avoid necessity to query links of the section_anchor to retrieve the latest section entry
     // which makes this method a little bit faster
-    course::handlers::delete_section(&section_anchor.course_address, &section_anchor_address)?;
+    let delete_section =
+        course::handlers::delete_section(&section_anchor.course_address, &section_anchor_address)?;
+    hdk::debug(format!(
+        "tatsuya: delete_section {:?}",
+        delete_section.clone()
+    ))?;
 
     // NOTE: let's try only deleting an anchor! (and don't touch links from anchor to section entry and section entry itself)
     // reasons:
     // 1) without it, we won't be able to reach the section because everywhere we link to section we only use anchor address
     // 2) we'll avoid polluting DHT by new deletion metadata
     let result = hdk::remove_entry(&section_anchor_address)?;
+    hdk::debug(format!(
+        "tatsuya: remove_section_entry_result {:?}",
+        result.clone()
+    ))?;
     Ok(result)
 }

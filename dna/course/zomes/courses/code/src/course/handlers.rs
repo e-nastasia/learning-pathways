@@ -81,22 +81,34 @@ fn commit_update(
 ) -> ZomeApiResult<Address> {
     // commit updated course to DHT and get it's new address
     let new_course_address = hdk::update_entry(course.entry(), previous_course_address)?;
+    hdk::debug(format!(
+        "tatsuya: new_course_address in commit update {:?}",
+        new_course_address.clone()
+    ))?;
 
     // remove link to previous version of course
-    hdk::remove_link(
+    let remove_link = hdk::remove_link(
         course_anchor_address,
         &previous_course_address,
         CourseAnchor::link_type(),
         "".to_owned(),
     )?;
+    hdk::debug(format!(
+        "tatsuya: remove_link in commit update {:?}",
+        remove_link.clone()
+    ))?;
 
     // create link to new version of course
-    hdk::link_entries(
+    let link_entry = hdk::link_entries(
         course_anchor_address,
         &new_course_address,
         CourseAnchor::link_type(),
         "".to_owned(),
     )?;
+    hdk::debug(format!(
+        "tatsuya: link_entries in commit update {:?}",
+        link_entry.clone()
+    ))?;
 
     Ok(course_anchor_address.to_owned())
 }
@@ -240,14 +252,22 @@ pub fn delete_section(
     let latest_course_result = get_latest_course(course_anchor_address)?;
     match latest_course_result {
         Some((mut previous_course, previous_course_address)) => {
+            hdk::debug(format!(
+                "tatsuya: previous_course_address {:?}",
+                previous_course_address.clone()
+            ))?;
             previous_course.sections.remove_item(section_anchor_address);
             // we won't use this new address but we need to save method's result somewhere
             // so this variable is prefixed with _
-            let _new_course_address = commit_update(
+            let new_course_address = commit_update(
                 previous_course,
                 &previous_course_address,
                 course_anchor_address,
             )?;
+            hdk::debug(format!(
+                "tatsuya: new_course_address from commit_update {}",
+                new_course_address.clone()
+            ))?;
 
             Ok(course_anchor_address.clone())
         }
