@@ -49,14 +49,16 @@ pub fn course_anchor_def() -> ValidatingEntryType {
         },
         validation: | validation_data: hdk::EntryValidationData<CourseAnchor>| {
             match validation_data{
-                EntryValidationData::Create { validation_data, .. } => {
-                    validation::anchor_create(validation_data)
+                EntryValidationData::Create { entry, validation_data } => {
+                    validation::anchor_create(entry, validation_data)
                  },
-                 EntryValidationData::Modify { validation_data, .. } => {
-                    validation::anchor_modify(validation_data)
+                 // NOTE: the symbol .. means that we're skipping unpacking parameters that we receive here
+                 // because we won't need them
+                 EntryValidationData::Modify { .. } => {
+                    validation::anchor_modify()
                  },
-                 EntryValidationData::Delete { validation_data, .. } => {
-                    validation::anchor_delete(validation_data)
+                 EntryValidationData::Delete { old_entry, old_entry_header, validation_data } => {
+                    validation::anchor_delete(old_entry, old_entry_header, validation_data)
                  }
             }
         },
@@ -69,8 +71,8 @@ pub fn course_anchor_def() -> ValidatingEntryType {
                 validation_package:||{
                     hdk::ValidationPackageDefinition::Entry
                 },
-                validation:|validation_data: hdk::LinkValidationData|{
-                   validation::anchor_link(validation_data)
+                validation: | _validation_data: hdk::LinkValidationData | {
+                   Ok(())
                 }
             ),
             // link from agent that is a teacher of this course
@@ -80,7 +82,7 @@ pub fn course_anchor_def() -> ValidatingEntryType {
                 link_type: TEACHER_TO_COURSE_ANCHOR_LINK,
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
-                }              ,
+                },
                 validation: | _validation_data: hdk::LinkValidationData | {
                     Ok(())
                 }
@@ -92,7 +94,7 @@ pub fn course_anchor_def() -> ValidatingEntryType {
                 link_type: STUDENT_TO_COURSE_ANCHOR_LINK,
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
-                }              ,
+                },
                 validation: | _validation_data: hdk::LinkValidationData | {
                     Ok(())
                 }
