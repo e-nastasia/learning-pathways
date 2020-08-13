@@ -1,5 +1,7 @@
 use hdk::{
-    error::ZomeApiResult, holochain_persistence_api::cas::content::Address, prelude::LinkMatch,
+    error::{ZomeApiError, ZomeApiResult},
+    holochain_persistence_api::cas::content::Address,
+    prelude::LinkMatch,
 };
 use holochain_entry_utils::HolochainEntry;
 
@@ -53,13 +55,17 @@ pub fn get_latest_data_entry<T: HolochainEntry>(
             )?
             .addresses();
 
-            // NOTE: we're assuming that this vec would only have one item in it.
-            // Question about it is added into zome README.md
-            let latest_entry_address = entry_addresses[0].clone();
-            let latest_entry: T = hdk::utils::get_as_type(latest_entry_address.clone())?;
-            // our return value is a Result container on the outside that holds Option container that holds a tuple
-            // we write Ok() to init Result's value, Some to init Option's value and then inside we have our tuple
-            return Ok(Some((latest_entry, latest_entry_address)));
+            if entry_addresses.len() != 1 {
+                return Err(ZomeApiError::from(
+                    "Something is wrong with links from CourseAnchor to Course".to_owned(),
+                ));
+            } else {
+                let latest_entry_address = entry_addresses[0].clone();
+                let latest_entry: T = hdk::utils::get_as_type(latest_entry_address.clone())?;
+                // our return value is a Result container on the outside that holds Option container that holds a tuple
+                // we write Ok() to init Result's value, Some to init Option's value and then inside we have our tuple
+                return Ok(Some((latest_entry, latest_entry_address)));
+            }
         }
         // anchor is deleted so we're returning None
         None => return Ok(None),
