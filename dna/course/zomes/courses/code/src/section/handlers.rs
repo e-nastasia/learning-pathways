@@ -41,7 +41,11 @@ pub fn create(
                 "".to_owned(),
             )?;
 
-            course::handlers::add_section(&course_anchor_address, &section_anchor_address)?;
+            course::handlers::add_section(
+                &course_anchor_address,
+                &section_anchor_address,
+                timestamp,
+            )?;
             // SectionAnchor serves as this section's ID so we return it
             Ok(section_anchor_address)
         }
@@ -95,14 +99,18 @@ pub fn update(title: String, section_anchor_address: &Address) -> ZomeApiResult<
     }
 }
 
-pub fn delete(section_anchor_address: Address) -> ZomeApiResult<Address> {
+pub fn delete(section_anchor_address: Address, timestamp: u64) -> ZomeApiResult<Address> {
     let section_anchor: SectionAnchor = hdk::utils::get_as_type(section_anchor_address.clone())?;
 
     // NOTE: we're using the fact that anchor contains course_address and that we don't allow
     //  to change course_address in a section entry.
     // By doing so, we avoid necessity to query links of the section_anchor to retrieve the latest section entry
     // which makes this method a little bit faster
-    course::handlers::delete_section(&section_anchor.course_address, &section_anchor_address)?;
+    course::handlers::delete_section(
+        &section_anchor.course_address,
+        &section_anchor_address,
+        timestamp,
+    )?;
 
     // NOTE: let's try only deleting an anchor! (and don't touch links from anchor to section entry and section entry itself)
     // reasons:
