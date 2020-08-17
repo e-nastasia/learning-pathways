@@ -63,12 +63,17 @@ pub fn get_latest_section(
     helper::get_latest_data_entry::<Section>(section_anchor_address, &SectionAnchor::link_type())
 }
 
-pub fn update(title: String, section_anchor_address: &Address) -> ZomeApiResult<Address> {
+pub fn update(
+    title: String,
+    section_anchor_address: &Address,
+    timestamp: u64,
+) -> ZomeApiResult<Address> {
     let latest_section_result = get_latest_section(section_anchor_address)?;
     match latest_section_result {
         Some((mut previous_section, previous_section_address)) => {
             // update the section
             previous_section.title = title;
+            previous_section.timestamp = timestamp;
             // commit this update to the DHT.
             let new_section_address =
                 hdk::update_entry(previous_section.entry(), &previous_section_address)?;

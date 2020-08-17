@@ -158,8 +158,12 @@ mod course_zome {
     }
 
     #[zome_fn("hc_public")]
-    fn update_section(title: String, section_anchor_address: Address) -> ZomeApiResult<Address> {
-        section::handlers::update(title, &section_anchor_address)
+    fn update_section(
+        title: String,
+        section_anchor_address: Address,
+        timestamp: u64,
+    ) -> ZomeApiResult<Address> {
+        section::handlers::update(title, &section_anchor_address, timestamp)
     }
 
     #[zome_fn("hc_public")]
