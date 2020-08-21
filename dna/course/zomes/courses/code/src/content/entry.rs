@@ -11,6 +11,13 @@ pub struct Content {
     pub description: String,
     pub timestamp: u64,
     pub section_anchor_address: Address,
+    // NOTE: storing teacher_address sure requires more memory for each and every Content entry but instead
+    // it gives us the ability to quickly validate that only the Course's teacher is modifying / deleting this Content entry.
+    // So we're trading smaller memory footprint for a less error-prone and less CPU-intensive validation, because it
+    // won't now rely on data retrieval from DHT (that could be unavailable for so many reasons).
+    // If you don't like neither of these options, there's another one: store each course in a separate DNA where teacher_address is
+    // just a DNA property: it's retrieval has constant time (because it's always there on every device). But that's a totally different topic.
+    pub teacher_address: Address,
 }
 
 impl Content {
@@ -20,6 +27,7 @@ impl Content {
         url: String,
         timestamp: u64,
         description: String,
+        teacher_address: Address,
     ) -> Self {
         Content {
             name,
@@ -27,6 +35,7 @@ impl Content {
             description,
             timestamp,
             section_anchor_address,
+            teacher_address: teacher_address,
         }
     }
 }
