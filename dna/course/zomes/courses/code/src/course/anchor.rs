@@ -71,8 +71,8 @@ pub fn course_anchor_def() -> ValidatingEntryType {
                 validation_package:||{
                     hdk::ValidationPackageDefinition::Entry
                 },
-                validation: | _validation_data: hdk::LinkValidationData | {
-                   Ok(())
+                validation: | validation_data: hdk::LinkValidationData | {
+                   validation::anchor_to_course_link(validation_data)
                 }
             ),
             // link from agent that is a teacher of this course
