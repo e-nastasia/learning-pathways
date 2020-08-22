@@ -72,7 +72,8 @@ export const resolvers = {
       )({
         title,
         course_anchor_address: courseId,
-        sections_addresses: sectionsAddresses
+        sections_addresses: sectionsAddresses,
+        timestamp: getTimestamp()
       });
 
       return parseResponse(result);
@@ -110,7 +111,8 @@ export const resolvers = {
         'update_section'
       )({
         section_anchor_address: sectionId,
-        title
+        title,
+        timestamp: getTimestamp(),
       });
 
       return new Promise(resolve => {
@@ -123,7 +125,8 @@ export const resolvers = {
         ZOME_NAME,
         'delete_section'
       )({
-        section_anchor_address: sectionId
+        section_anchor_address: sectionId,
+        timestamp: getTimestamp(),
       });
 
       return new Promise(resolve => {
@@ -156,7 +159,8 @@ export const resolvers = {
         name: content.name,
         content_address: contentId,
         url: content.url,
-        description: content.description
+        description: content.description,
+        timestamp: getTimestamp()
       });
 
       return new Promise(resolve => {
