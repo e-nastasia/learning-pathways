@@ -199,8 +199,9 @@ mod course_zome {
         name: String,
         url: String,
         description: String,
+        timestamp: u64,
     ) -> ZomeApiResult<Address> {
-        content::handlers::update(content_address, name, url, description)
+        content::handlers::update(content_address, name, url, description, timestamp)
     }
 
     #[zome_fn("hc_public")]
