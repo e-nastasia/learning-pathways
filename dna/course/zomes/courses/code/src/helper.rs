@@ -33,6 +33,17 @@ pub fn validate_only_teacher_can_do(
     Ok(())
 }
 
+pub fn validate_no_teacher_change(
+    old_teacher_address: Address,
+    new_teacher_address: Address,
+    entity_name: &str,
+) -> Result<(), String> {
+    if old_teacher_address != new_teacher_address {
+        return Err(format!("Cannot change the teacher of the {}", entity_name));
+    }
+    Ok(())
+}
+
 // gets latest data entry that is linked to anchor at entry_anchor_address
 // This is a helper for anchor-first pattern entries
 pub fn get_latest_data_entry<T: HolochainEntry>(

@@ -1,25 +1,43 @@
-use crate::course::handlers::get_latest_course;
+use super::entry::Content;
 use crate::helper;
-use crate::section::handlers::get_latest_section;
-use hdk::error::ZomeApiResult;
-use hdk::holochain_persistence_api::cas::content::Address;
+use hdk::holochain_core_types::chain_header::ChainHeader;
 use hdk::ValidationData;
+use holochain_entry_utils::HolochainEntry;
 
-/////////////////////////// Validations
-pub fn validate_author(
+pub fn create(entry: Content, validation_data: ValidationData) -> Result<(), String> {
+    helper::validate_only_teacher_can_do(
+        &entry.teacher_address,
+        validation_data.sources(),
+        "create content in the section of this course",
+    )
+}
+
+pub fn modify(
+    new_entry: Content,
+    old_entry: Content,
+    _old_entry_header: ChainHeader,
     validation_data: ValidationData,
-    section_anchor_address: &Address,
-) -> ZomeApiResult<()> {
-    let latest_section_result = get_latest_section(&section_anchor_address)?;
-    if let Some((current_section, _current_section_address)) = latest_section_result {
-        let latest_course_result = get_latest_course(&current_section.course_address)?;
-        if let Some((current_course, _current_course_address)) = latest_course_result {
-            helper::validate_only_teacher_can_do(
-                &current_course.teacher_address,
-                validation_data.sources(),
-                "create a content in this section",
-            )?;
-        }
-    }
-    Ok(())
+) -> Result<(), String> {
+    helper::validate_only_teacher_can_do(
+        &old_entry.teacher_address,
+        validation_data.sources(),
+        "modify content in the section of this course",
+    )?;
+    helper::validate_no_teacher_change(
+        old_entry.teacher_address,
+        new_entry.teacher_address,
+        &Content::entry_type(),
+    )
+}
+
+pub fn delete(
+    entry: Content,
+    _entry_header: ChainHeader,
+    validation_data: ValidationData,
+) -> Result<(), String> {
+    helper::validate_only_teacher_can_do(
+        &entry.teacher_address,
+        validation_data.sources(),
+        "delete content in the section of this course",
+    )
 }

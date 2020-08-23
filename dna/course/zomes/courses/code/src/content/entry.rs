@@ -1,7 +1,7 @@
 use hdk::prelude::*;
 use holochain_entry_utils::HolochainEntry;
 
-use super::validation::validate_author;
+use super::validation;
 
 // NOTE: using self::DefaultJson to disambiguate usage of DefaultJson from this module (hdk::prelude imports it)
 #[derive(Serialize, Deserialize, Debug, self::DefaultJson, Clone)]
@@ -57,20 +57,13 @@ pub fn section_entry_def() -> ValidatingEntryType {
         validation: | validation_data: hdk::EntryValidationData<Content>| {
             match  validation_data {
                 EntryValidationData::Create { entry, validation_data } => {
-                    validate_author(validation_data, &entry.section_anchor_address)?;
-                    Ok(())
+                    validation::create(entry, validation_data)
                 },
-                EntryValidationData::Modify { new_entry, old_entry, validation_data, .. } => {
-                    if new_entry.section_anchor_address != old_entry.section_anchor_address {
-                        return Err(String::from("Cannot change section to which this content belongs to"));
-                    }
-                    validate_author(validation_data, &new_entry.section_anchor_address)?;
-                    Ok(())
+                EntryValidationData::Modify { new_entry, old_entry, old_entry_header, validation_data } => {
+                    validation::modify(new_entry, old_entry, old_entry_header, validation_data)
                 },
-                EntryValidationData::Delete { old_entry, validation_data, .. } => {
-                    validate_author(validation_data, &old_entry.section_anchor_address)?;
-
-                    Ok(())
+                EntryValidationData::Delete { old_entry, old_entry_header, validation_data } => {
+                    validation::delete(old_entry, old_entry_header, validation_data)
                 }
             }
         }
